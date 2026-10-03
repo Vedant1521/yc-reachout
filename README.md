@@ -27,10 +27,10 @@ Python 3.9+, standard library only. Nothing to install.
 
    The reliability figure comes from a check against 151 Apify-verified founder emails: the first guess matched 80%, and
    the right address was somewhere in the guess list 93% of the time.
-6. **3-Step Follow-Up Sequence & Gmail Compose:** Switch between Opener (Step 1), Bump (+3d, Step 2), and Breakup (+7d, Step 3) email drafts. 1-click **Open in Gmail ↗** creates pre-filled web compose drafts alongside default mail links.
+6. **Dual-Strategy Sequence & Runtime Pitch Angle:** Switch at runtime on each company card between **⚡ High-Velocity Builder** (Option A: prototype/shipping focus) and **🛠️ Open-Source / Technical** (Option B: technical/OSS contribution focus). Automatically suggests the technical angle for open-source startups while keeping full customization.
 7. **AI Micro-Hook & Custom Pitch:** Generates natural, lowercase observation hooks via Groq, Gemini, or OpenAI without spammy fluff. Revert to YC's original pitch with `[↩ Original Pitch]` or customize inline with `[✏️ Edit]`.
 8. **Multi-Channel Founder Radar:** Auto-detects each company's official **Launch HN** Hacker News thread with upvotes, and copies personalized **LinkedIn connection notes** (<300 chars) in 1 click.
-9. **Outreach Conversion Funnel & Local CRM:** Track pipeline stages (`Uncontacted`, `Step 1 Sent`, `Follow-up Due` automatically after 3 days, `Step 2 Sent`, `Replied`, `Passed`) with live funnel conversion metrics (`Contacted %`, `Reply Rate %`), in-line private notes, and theme toggle (`☀️ / 🌙`).
+9. **Outreach Conversion Funnel & Local CRM:** Track pipeline stages (`Uncontacted`, `Step 1 Sent`, `Follow-up Due` automatically after 3 days, `Step 2 Sent`, `Replied`, `Passed`) with live funnel conversion metrics (`Contacted %`, `Reply Rate %`), and in-line private notes.
 
 Your details, template, CRM pipeline and loaded batches are stored in your browser (`localStorage`). There's no
 database and no account. Use **📊 Export CSV (Excel)** to download a clean spreadsheet of your pipeline (including notes, team sizes, and repos), or **💾 Backup (JSON)** and **📂 Restore** to migrate your data across devices.

@@ -2,7 +2,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1"><title>YC Founder Outreach</title>
 <meta name="description" content="Pick a YC batch, find founder emails, and write personalised cold emails from one template.">
 <style>
-:root{--bg:#f7f7f5;--card:#fff;--fg:#1c1c1a;--muted:#6b6b66;--line:#e4e3de;--accent:#e2561b;--ok:#1f8a4c;--warn:#a86b00;--err:#c0392b}
+:root{--bg:#141413;--card:#1c1c1a;--fg:#ecece8;--muted:#94938d;--line:#2b2b27;--accent:#f26522;--ok:#3cb371;--warn:#e0a53a;--err:#e05d52}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.5 -apple-system,system-ui,"Segoe UI",sans-serif}
 main{max-width:860px;margin:0 auto;padding:32px 16px}h1{margin:0 0 4px;font-size:24px}h2{font-size:16px;margin:0 0 10px}
 p.sub{margin:0 0 20px;color:var(--muted)}a{color:var(--accent)}
@@ -65,12 +65,17 @@ a.lnk{color:var(--muted);font-size:13px}
   <p class="ph" style="margin:4px 0 8px">AI Key is optional: Gemini, OpenAI, and Groq are supported. If you provide both a primary key and a free Groq backup key (<code>gsk_...</code>), it automatically falls back to Groq whenever Gemini or OpenAI is overloaded.</p>
   <h2>2. Email sequence templates</h2>
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;border-bottom:1px solid var(--line);padding-bottom:10px;flex-wrap:wrap;gap:8px">
-    <div style="display:flex;gap:6px">
-      <button type="button" class="tab-btn active" data-tpl-step="1">Step 1: Opener</button>
-      <button type="button" class="tab-btn" data-tpl-step="2">Step 2: Bump (+3d)</button>
-      <button type="button" class="tab-btn" data-tpl-step="3">Step 3: Breakup (+7d)</button>
+    <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+      <span style="font-size:12px;color:var(--muted);font-weight:600">Strategy:</span>
+      <button type="button" class="tab-btn active" data-tpl-strat="builder">⚡ High-Velocity Builder (Option A)</button>
+      <button type="button" class="tab-btn" data-tpl-strat="tech">🛠️ OSS / Technical (Option B)</button>
     </div>
     <button id="reset" type="button" style="font-size:12px;padding:4px 12px;border-radius:6px;border:1px solid var(--line);background:var(--card);color:var(--muted);cursor:pointer;display:inline-flex;align-items:center;gap:4px">↺ Reset step template</button>
+  </div>
+  <div style="display:flex;gap:6px;margin-bottom:12px">
+    <button type="button" class="tab-btn active" data-tpl-step="1">Step 1: Opener</button>
+    <button type="button" class="tab-btn" data-tpl-step="2">Step 2: Bump (+3d)</button>
+    <button type="button" class="tab-btn" data-tpl-step="3">Step 3: Breakup (+7d)</button>
   </div>
   <label class="f">Subject<input id="tplSubj"></label>
   <label class="f" style="margin-top:10px">Body<textarea id="tplBody"></textarea></label>
@@ -144,43 +149,65 @@ a.lnk{color:var(--muted);font-size:13px}
 <script>
 const DEFAULTS = {
   my_name: "", my_skills: "", portfolio: "", github: "", resume: "", ai_key: "", groq_key: "",
-  subject: "interested in {company}",
-  body: `Hey {first_name},
+  // Option A — High-Velocity Builder
+  builder_subject: "quick question about {company}",
+  builder_body: `hey {first_name} — came across {company} and {hook} caught my attention.
 
-saw {company} and {hook} really stood out.
+i'm an engineer who likes shipping fast — mostly {my_skills} — and i’ve built and shipped products end-to-end rather than just coursework.
 
-[1-2 lines about you: what you're doing now and what you've built]
+would love to help you push something real out the door. happy to build a quick prototype or tackle a small issue this week.
 
-[1 line on relevant experience: stack, projects, open source]
-
-would love to explore if there's a role at {company}.
-
-- {my_name}
+{my_name}
 portfolio: {portfolio}
 github: {github}
 resume: {resume}`,
-  subject_step2: "Re: interested in {company}",
-  body_step2: `Hey {first_name},
+  builder_subject_step2: "Re: quick question about {company}",
+  builder_body_step2: `hey {first_name} — just bumping this once.
 
-following up on my note below in case it got buried.
+i'd be happy to build a small feature/POC for {company} so you can see how i work before spending much time on calls.
 
-really excited about what you're building with {company} and would love to chat if you're looking for an engineer with experience in {my_skills}.
+worth a 10-min chat if you're looking for someone who moves fast?
 
-- {my_name}
+{my_name}`,
+  builder_subject_step3: "closing the loop — {company}",
+  builder_body_step3: `hey {first_name} — guessing you're pretty heads-down at {company}, so i'll close the loop here.
+
+still interested in helping out if the timing ever lines up. happy to start with something small and earn the next step.
+
+either way, good luck with what you're building.
+
+{my_name}`,
+
+  // Option B — Open-Source / Technical Specialist
+  tech_subject: "a technical question about {company}",
+  tech_body: `hey {first_name} — i've been looking at {company} and {hook} stood out.
+
+noticed you're building with {tech_stack} — that's very close to the kind of systems i like building.
+
+i'm strongest in {my_skills}, and i prefer shipping over talking about shipping. happy to pick a small issue, prototype, or open-source task and send something useful over.
+
+open to a quick chat?
+
+{my_name}
+github: {github}
 portfolio: {portfolio}
-github: {github}`,
-  subject_step3: "Re: interested in {company}",
-  body_step3: `Hey {first_name},
+resume: {resume}`,
+  tech_subject_step2: "Re: a technical question about {company}",
+  tech_body_step2: `hey {first_name} — one more thought.
 
-assuming you're heads down or not hiring right now, so I won't clutter your inbox further!
+rather than a generic “are you hiring?”, i’d be happy to take a small piece of {github_repo} or something adjacent to {tech_stack} and build it out.
 
-if things change or you need an engineer who can move fast on {tech_stack}, feel free to reach out anytime.
+no big commitment on your side. if useful, we can take it from there.
 
-best of luck with {company}!
+{my_name}`,
+  tech_subject_step3: "i'll leave it here — {company}",
+  tech_body_step3: `hey {first_name} — i'll leave you alone after this.
 
-- {my_name}
-portfolio: {portfolio}
-github: {github}`
+figured you're busy building {company}. if you ever need an engineer comfortable with {my_skills} and working close to the code, i'd be glad to reconnect.
+
+keeping the door open.
+
+{my_name}`
 };
 const KEY = "yc-outreach-v2";
 const ACTOR = "snipercoder~email-finder-by-name-and-domain";
@@ -188,6 +215,18 @@ const APIFY = "https://api.apify.com/v2";
 const store = { get(k, d) { try { return JSON.parse(localStorage.getItem(k)) ?? d } catch { return d } },
                 set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)) } catch {} } };
 let tpl = Object.assign({}, DEFAULTS, store.get(KEY, {}));
+if (!tpl.builder_subject || tpl.builder_subject === "interested in {company}") tpl.builder_subject = DEFAULTS.builder_subject;
+if (!tpl.builder_body || tpl.builder_body.includes("saw {company} and {hook} really stood out.")) tpl.builder_body = DEFAULTS.builder_body;
+if (!tpl.builder_subject_step2 || tpl.builder_subject_step2 === "Re: interested in {company}") tpl.builder_subject_step2 = DEFAULTS.builder_subject_step2;
+if (!tpl.builder_body_step2 || tpl.builder_body_step2.includes("following up on my note below")) tpl.builder_body_step2 = DEFAULTS.builder_body_step2;
+if (!tpl.builder_subject_step3 || tpl.builder_subject_step3 === "Re: interested in {company}") tpl.builder_subject_step3 = DEFAULTS.builder_subject_step3;
+if (!tpl.builder_body_step3 || tpl.builder_body_step3.includes("assuming you're heads down")) tpl.builder_body_step3 = DEFAULTS.builder_body_step3;
+if (!tpl.tech_subject) tpl.tech_subject = DEFAULTS.tech_subject;
+if (!tpl.tech_body) tpl.tech_body = DEFAULTS.tech_body;
+if (!tpl.tech_subject_step2) tpl.tech_subject_step2 = DEFAULTS.tech_subject_step2;
+if (!tpl.tech_body_step2) tpl.tech_body_step2 = DEFAULTS.tech_body_step2;
+if (!tpl.tech_subject_step3) tpl.tech_subject_step3 = DEFAULTS.tech_subject_step3;
+if (!tpl.tech_body_step3) tpl.tech_body_step3 = DEFAULTS.tech_body_step3;
 let sent = new Set(store.get(KEY + "-sent", []));
 let crm = store.get(KEY + "-crm", {});
 if (Object.keys(crm).length === 0 && sent.size > 0) {
@@ -313,8 +352,9 @@ function render() {
     else if (status === "replied") statusBadge = `<span class="badge" style="background:var(--ok);color:#fff;font-weight:700;border:none">🎉 Replied</span>`;
     else if (status === "passed") statusBadge = `<span class="badge" style="color:var(--muted);border-color:var(--muted)">Passed</span>`;
 
+    const defaultStrat = c.github_repo ? "tech" : "builder";
     const isOpen = openIndexes.has(String(i)) ? "open" : "";
-    return `<details data-i="${i}" data-k="${esc(key)}" data-s="${b.kind}" data-crm="${status}" data-seq="1" class="${status !== "uncontacted" ? "sent" : ""} crm-${status}" ${isOpen}>
+    return `<details data-i="${i}" data-k="${esc(key)}" data-s="${b.kind}" data-crm="${status}" data-seq="1" data-strat="${defaultStrat}" class="${status !== "uncontacted" ? "sent" : ""} crm-${status}" ${isOpen}>
       <summary><span class="name">${esc(c.name)}</span>${c.github_repo ? `<span class="badge" style="color:#2ea44f;border-color:#2ea44f;font-size:11px;padding:0 5px">⭐ OSS</span>` : ""}<span class="badge ${b.kind || "none"}">${esc(b.label)}</span>
       <span class="crm-badge">${getStatusBadge(status)}</span>
       <span class="meta">${esc(f?.name || "")}<br>${esc(c.batch)}</span></summary>
@@ -331,11 +371,18 @@ function render() {
         </div>
         ${c.error ? `<p class="status err">${esc(c.error)}</p>` : ""}
         ${fs.map(o => { const e = best(o); return `<div class="r"><b>${o === f ? "To" : "Also"}</b>${esc(o.name)}${o.title ? ` (${esc(o.title)})` : ""} · ${esc(e.email || "no email")} <span class="badge ${e.kind}">${e.label}</span>${e.email ? ` <span class="badge mx-badge" data-domain="${esc(c.domain)}" style="font-size:11px;padding:0 6px;display:none"></span>` : ""}</div>` }).join("")}
-        <div style="display:flex;gap:6px;align-items:center;margin:12px 0 6px">
-          <span style="font-size:12px;color:var(--muted);font-weight:600">Sequence:</span>
-          <button class="tab-btn active" data-a="seq-tab" data-seq="1" type="button">Step 1: Opener</button>
-          <button class="tab-btn" data-a="seq-tab" data-seq="2" type="button">Step 2: Bump (+3d)</button>
-          <button class="tab-btn" data-a="seq-tab" data-seq="3" type="button">Step 3: Breakup (+7d)</button>
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin:12px 0 6px">
+          <div style="display:flex;gap:6px;align-items:center">
+            <span style="font-size:12px;color:var(--muted);font-weight:600">Sequence:</span>
+            <button class="tab-btn active" data-a="seq-tab" data-seq="1" type="button">Step 1: Opener</button>
+            <button class="tab-btn" data-a="seq-tab" data-seq="2" type="button">Step 2: Bump (+3d)</button>
+            <button class="tab-btn" data-a="seq-tab" data-seq="3" type="button">Step 3: Breakup (+7d)</button>
+          </div>
+          <div style="display:flex;gap:4px;align-items:center">
+            <span style="font-size:12px;color:var(--muted);font-weight:600">Angle:</span>
+            <button class="tab-btn ${defaultStrat === "builder" ? "active" : ""}" data-a="strat-tab" data-strat="builder" type="button">⚡ Builder</button>
+            <button class="tab-btn ${defaultStrat === "tech" ? "active" : ""}" data-a="strat-tab" data-strat="tech" type="button">🛠️ OSS / Tech</button>
+          </div>
         </div>
         <div class="r"><b>Subject</b><span class="subj"></span></div>
         <pre></pre>
@@ -375,10 +422,12 @@ function draft(d) {
   const c = DATA[d.dataset.i], to = contacts(c)[0];
   const toEmail = to ? best(to).email : "";
   const seq = d.dataset.seq || "1";
-  const sKey = seq === "1" ? "subject" : `subject_step${seq}`;
-  const bKey = seq === "1" ? "body" : `body_step${seq}`;
-  const subject = fill(tpl[sKey] ?? DEFAULTS[sKey], c);
-  const body = fill(tpl[bKey] ?? DEFAULTS[bKey], c);
+  const strat = d.dataset.strat || (c.github_repo ? "tech" : "builder");
+  const prefix = strat === "tech" ? "tech_" : "builder_";
+  const sKey = seq === "1" ? `${prefix}subject` : `${prefix}subject_step${seq}`;
+  const bKey = seq === "1" ? `${prefix}body` : `${prefix}body_step${seq}`;
+  const subject = fill(tpl[sKey] ?? DEFAULTS[sKey] ?? "", c);
+  const body = fill(tpl[bKey] ?? DEFAULTS[bKey] ?? "", c);
   d.querySelector(".subj").textContent = subject;
   d.querySelector("pre").textContent = body;
   const mailEl = d.querySelector(".mail");
@@ -883,6 +932,13 @@ $("list").addEventListener("click", e => {
     draft(d);
     return;
   }
+  if (b.dataset.a === "strat-tab") {
+    const strat = b.dataset.strat;
+    d.dataset.strat = strat;
+    d.querySelectorAll('[data-a="strat-tab"]').forEach(btn => btn.classList.toggle("active", btn.dataset.strat === strat));
+    draft(d);
+    return;
+  }
   if (b.dataset.a === "gen-hook") {
     generateHook(c, d, b);
     return;
@@ -947,14 +1003,23 @@ $("all").onclick = e => {
   e.target.textContent = open ? "Collapse all" : "Expand all";
 };
 
+let activeTplStrat = "builder";
 let activeTplStep = "1";
 function loadTplEditor() {
+  document.querySelectorAll("[data-tpl-strat]").forEach(btn => btn.classList.toggle("active", btn.dataset.tplStrat === activeTplStrat));
   document.querySelectorAll("[data-tpl-step]").forEach(btn => btn.classList.toggle("active", btn.dataset.tplStep === activeTplStep));
-  const sKey = activeTplStep === "1" ? "subject" : `subject_step${activeTplStep}`;
-  const bKey = activeTplStep === "1" ? "body" : `body_step${activeTplStep}`;
-  $("tplSubj").value = tpl[sKey] ?? DEFAULTS[sKey];
-  $("tplBody").value = tpl[bKey] ?? DEFAULTS[bKey];
+  const prefix = activeTplStrat === "tech" ? "tech_" : "builder_";
+  const sKey = activeTplStep === "1" ? `${prefix}subject` : `${prefix}subject_step${activeTplStep}`;
+  const bKey = activeTplStep === "1" ? `${prefix}body` : `${prefix}body_step${activeTplStep}`;
+  $("tplSubj").value = tpl[sKey] ?? DEFAULTS[sKey] ?? "";
+  $("tplBody").value = tpl[bKey] ?? DEFAULTS[bKey] ?? "";
 }
+document.querySelectorAll("[data-tpl-strat]").forEach(btn => {
+  btn.onclick = () => {
+    activeTplStrat = btn.dataset.tplStrat;
+    loadTplEditor();
+  };
+});
 document.querySelectorAll("[data-tpl-step]").forEach(btn => {
   btn.onclick = () => {
     activeTplStep = btn.dataset.tplStep;
@@ -962,20 +1027,23 @@ document.querySelectorAll("[data-tpl-step]").forEach(btn => {
   };
 });
 $("tplSubj").addEventListener("input", e => {
-  const sKey = activeTplStep === "1" ? "subject" : `subject_step${activeTplStep}`;
+  const prefix = activeTplStrat === "tech" ? "tech_" : "builder_";
+  const sKey = activeTplStep === "1" ? `${prefix}subject` : `${prefix}subject_step${activeTplStep}`;
   tpl[sKey] = e.target.value;
   store.set(KEY, tpl);
   update();
 });
 $("tplBody").addEventListener("input", e => {
-  const bKey = activeTplStep === "1" ? "body" : `body_step${activeTplStep}`;
+  const prefix = activeTplStrat === "tech" ? "tech_" : "builder_";
+  const bKey = activeTplStep === "1" ? `${prefix}body` : `${prefix}body_step${activeTplStep}`;
   tpl[bKey] = e.target.value;
   store.set(KEY, tpl);
   update();
 });
 $("reset").onclick = () => {
-  const sKey = activeTplStep === "1" ? "subject" : `subject_step${activeTplStep}`;
-  const bKey = activeTplStep === "1" ? "body" : `body_step${activeTplStep}`;
+  const prefix = activeTplStrat === "tech" ? "tech_" : "builder_";
+  const sKey = activeTplStep === "1" ? `${prefix}subject` : `${prefix}subject_step${activeTplStep}`;
+  const bKey = activeTplStep === "1" ? `${prefix}body` : `${prefix}body_step${activeTplStep}`;
   tpl[sKey] = DEFAULTS[sKey];
   tpl[bKey] = DEFAULTS[bKey];
   store.set(KEY, tpl);
