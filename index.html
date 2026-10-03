@@ -61,6 +61,8 @@ a.lnk{color:var(--muted);font-size:13px}
     <label class="f">Resume link<input data-k="resume" placeholder="https://..."></label>
     <label class="f">Primary AI Key (Gemini or OpenAI)<input data-k="ai_key" type="password" placeholder="Gemini key (AIza...) or OpenAI (sk-...)" autocomplete="off"></label>
     <label class="f">Backup AI Key (Groq - optional)<input data-k="groq_key" type="password" placeholder="gsk_... (free instant fallback)" autocomplete="off"></label>
+    <label class="f" style="grid-column:1/-1">Stuff I've built / key projects (name, link, 1-line description)<textarea data-k="my_projects" style="min-height:90px;height:100px;font-family:inherit;font-size:13px;line-height:1.5" placeholder="• Project A (https://...): AI workspace for study abroad apps &amp; SOPs&#10;• Project B (https://...): visual smart contract builder on Solana, no code&#10;• Project C (https://...): DeFi on Avalanche, AI DEX"></textarea></label>
+    <label class="f" style="grid-column:1/-1">Traction / Achievements / Current role (optional)<input data-k="my_traction" placeholder="e.g. shipped multiple products end-to-end (one crossed 10k+ users). 10+ hackathon wins &amp; grant recipient."></label>
   </div>
   <p class="ph" style="margin:4px 0 8px">AI Key is optional: Gemini, OpenAI, and Groq are supported. If you provide both a primary key and a free Groq backup key (<code>gsk_...</code>), it automatically falls back to Groq whenever Gemini or OpenAI is overloaded.</p>
   <h2>2. Email sequence templates</h2>
@@ -79,8 +81,8 @@ a.lnk{color:var(--muted);font-size:13px}
   </div>
   <label class="f">Subject<input id="tplSubj"></label>
   <label class="f" style="margin-top:10px">Body<textarea id="tplBody"></textarea></label>
-  <p class="ph" id="vars">Click to insert: <code>{first_name}</code><code>{company}</code><code>{hook}</code><code>{tech_stack}</code><code>{github_repo}</code><code>{one_liner}</code><code>{batch}</code><code>{my_name}</code><code>{my_skills}</code><code>{portfolio}</code><code>{github}</code><code>{resume}</code></p>
-  <p class="ph">Lines like <code>resume: {resume}</code> are dropped when left empty. <code>{hook}</code> uses your 1-click AI observation; <code>{tech_stack}</code> inserts detected technologies; <code>{github_repo}</code> inserts detected open-source repo.</p>
+  <p class="ph" id="vars">Click to insert: <code>{first_name}</code><code>{company}</code><code>{hook}</code><code>{my_projects}</code><code>{my_traction}</code><code>{tech_stack}</code><code>{github_repo}</code><code>{my_name}</code><code>{my_skills}</code><code>{portfolio}</code><code>{github}</code><code>{resume}</code><code>{one_liner}</code><code>{batch}</code></p>
+  <p class="ph">Lines like <code>resume: {resume}</code> are dropped when left empty. <code>{hook}</code> uses your 1-click AI observation; <code>{my_projects}</code> inserts your live project showcase; <code>{github_repo}</code> inserts detected open-source repo.</p>
 </section>
 
 <section class="panel">
@@ -149,57 +151,76 @@ a.lnk{color:var(--muted);font-size:13px}
 <script>
 const DEFAULTS = {
   my_name: "", my_skills: "", portfolio: "", github: "", resume: "", ai_key: "", groq_key: "",
+  my_projects: `• Project A (https://...): AI workspace for study abroad apps & SOPs\n• Project B (https://...): visual smart contract builder on Solana, no code\n• Project C (https://...): DeFi on Avalanche, AI DEX`,
+  my_traction: `shipped multiple products end-to-end (one crossed 10k+ users). 10+ hackathon wins & grant recipient.`,
+
   // Option A — High-Velocity Builder
   builder_subject: "quick question about {company}",
-  builder_body: `hey {first_name} — came across {company} and {hook} caught my attention.
+  builder_body: `hey {first_name},
 
-i'm an engineer who likes shipping fast — mostly {my_skills} — and i’ve built and shipped products end-to-end rather than just coursework.
+keeping it short — engineer specializing in {my_skills}.
 
-would love to help you push something real out the door. happy to build a quick prototype or tackle a small issue this week.
+saw {company} and {hook} really stood out.
 
-{my_name}
+stuff I've built:
+{my_projects}
+
+{my_traction}
+
 portfolio: {portfolio}
 github: {github}
-resume: {resume}`,
+resume: {resume}
+
+would love to build with {company} and help push real product out the door. open to a quick 10-min chat or happy to build a small prototype this week?
+
+- {my_name}`,
   builder_subject_step2: "Re: quick question about {company}",
-  builder_body_step2: `hey {first_name} — just bumping this once.
+  builder_body_step2: `hey {first_name} — just bumping this once in case it got buried.
 
-i'd be happy to build a small feature/POC for {company} so you can see how i work before spending much time on calls.
+happy to build a small feature or prototype for {company} so you can see how fast I ship before spending much time on calls.
 
-worth a 10-min chat if you're looking for someone who moves fast?
+worth a 10-min chat this week?
 
-{my_name}`,
+- {my_name}`,
   builder_subject_step3: "closing the loop — {company}",
-  builder_body_step3: `hey {first_name} — guessing you're pretty heads-down at {company}, so i'll close the loop here.
+  builder_body_step3: `hey {first_name} — guessing you're pretty heads-down building {company}, so I won't clutter your inbox further!
 
-still interested in helping out if the timing ever lines up. happy to start with something small and earn the next step.
+if things open up or you need an engineer who can move fast on {tech_stack}, feel free to reach out anytime.
 
-either way, good luck with what you're building.
+best of luck with what you're building!
 
-{my_name}`,
+- {my_name}`,
 
   // Option B — Open-Source / Technical Specialist
   tech_subject: "a technical question about {company}",
-  tech_body: `hey {first_name} — i've been looking at {company} and {hook} stood out.
+  tech_body: `hey {first_name},
 
-noticed you're building with {tech_stack} — that's very close to the kind of systems i like building.
+keeping it short — engineer comfortable moving close to the code in {my_skills}.
 
-i'm strongest in {my_skills}, and i prefer shipping over talking about shipping. happy to pick a small issue, prototype, or open-source task and send something useful over.
+saw {company} and {hook} really stood out.
+
+stuff I've built & contributed to:
+{my_projects}
+
+{my_traction}
+
+portfolio: {portfolio}
+github: {github}
+resume: {resume}
+
+noticed you're building with {tech_stack} — would love to pick a small issue or open-source task and send something useful over for {company}.
 
 open to a quick chat?
 
-{my_name}
-github: {github}
-portfolio: {portfolio}
-resume: {resume}`,
+- {my_name}`,
   tech_subject_step2: "Re: a technical question about {company}",
   tech_body_step2: `hey {first_name} — one more thought.
 
-rather than a generic “are you hiring?”, i’d be happy to take a small piece of {github_repo} or something adjacent to {tech_stack} and build it out.
+rather than a generic “are you hiring?”, i’d be happy to take a small piece of {github_repo} or something adjacent to {tech_stack} and build it out so you can see my code in action.
 
 no big commitment on your side. if useful, we can take it from there.
 
-{my_name}`,
+- {my_name}`,
   tech_subject_step3: "i'll leave it here — {company}",
   tech_body_step3: `hey {first_name} — i'll leave you alone after this.
 
@@ -207,7 +228,7 @@ figured you're busy building {company}. if you ever need an engineer comfortable
 
 keeping the door open.
 
-{my_name}`
+- {my_name}`
 };
 const KEY = "yc-outreach-v2";
 const ACTOR = "snipercoder~email-finder-by-name-and-domain";
@@ -215,14 +236,16 @@ const APIFY = "https://api.apify.com/v2";
 const store = { get(k, d) { try { return JSON.parse(localStorage.getItem(k)) ?? d } catch { return d } },
                 set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)) } catch {} } };
 let tpl = Object.assign({}, DEFAULTS, store.get(KEY, {}));
+if (!tpl.my_projects) tpl.my_projects = DEFAULTS.my_projects;
+if (!tpl.my_traction) tpl.my_traction = DEFAULTS.my_traction;
 if (!tpl.builder_subject || tpl.builder_subject === "interested in {company}") tpl.builder_subject = DEFAULTS.builder_subject;
-if (!tpl.builder_body || tpl.builder_body.includes("saw {company} and {hook} really stood out.")) tpl.builder_body = DEFAULTS.builder_body;
+if (!tpl.builder_body || tpl.builder_body.includes("saw {company} and {hook} really stood out.") || tpl.builder_body.includes("rather than just coursework")) tpl.builder_body = DEFAULTS.builder_body;
 if (!tpl.builder_subject_step2 || tpl.builder_subject_step2 === "Re: interested in {company}") tpl.builder_subject_step2 = DEFAULTS.builder_subject_step2;
 if (!tpl.builder_body_step2 || tpl.builder_body_step2.includes("following up on my note below")) tpl.builder_body_step2 = DEFAULTS.builder_body_step2;
 if (!tpl.builder_subject_step3 || tpl.builder_subject_step3 === "Re: interested in {company}") tpl.builder_subject_step3 = DEFAULTS.builder_subject_step3;
 if (!tpl.builder_body_step3 || tpl.builder_body_step3.includes("assuming you're heads down")) tpl.builder_body_step3 = DEFAULTS.builder_body_step3;
 if (!tpl.tech_subject) tpl.tech_subject = DEFAULTS.tech_subject;
-if (!tpl.tech_body) tpl.tech_body = DEFAULTS.tech_body;
+if (!tpl.tech_body || tpl.tech_body.includes("prefer shipping over talking")) tpl.tech_body = DEFAULTS.tech_body;
 if (!tpl.tech_subject_step2) tpl.tech_subject_step2 = DEFAULTS.tech_subject_step2;
 if (!tpl.tech_body_step2) tpl.tech_body_step2 = DEFAULTS.tech_body_step2;
 if (!tpl.tech_subject_step3) tpl.tech_subject_step3 = DEFAULTS.tech_subject_step3;
@@ -325,12 +348,21 @@ function fill(text, c) {
     batch: c.batch,
     my_name: tpl.my_name,
     my_skills: tpl.my_skills || "software engineering",
+    my_projects: (tpl.my_projects || "").trim(),
+    my_traction: (tpl.my_traction || "").trim(),
     portfolio: tpl.portfolio,
     github: tpl.github,
     resume: tpl.resume
   };
-  const out = text.replace(/\{(\w+)\}/g, (m, k) => k in vars ? vars[k] : m);
-  return out.split("\n").filter(l => !/^\s*[\w ]+:\s*$/.test(l)).join("\n");
+  let out = text.replace(/\{(\w+)\}/g, (m, k) => (k in vars && vars[k] != null) ? vars[k] : m);
+  if (!vars.my_projects) {
+    out = out.replace(/(?:stuff I['’]ve built[^\n]*:?\s*)+/gi, "");
+  }
+  return out.split("\n")
+    .filter(l => !/^\s*(?!stuff\b)[\w '’&]+:\s*$/i.test(l))
+    .join("\n")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
 }
 
 function render() {
