@@ -1,0 +1,1047 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1"><title>YC Founder Outreach</title>
+<meta name="description" content="Pick a YC batch, find founder emails, and write personalised cold emails from one template.">
+<style>
+:root{--bg:#f7f7f5;--card:#fff;--fg:#1c1c1a;--muted:#6b6b66;--line:#e4e3de;--accent:#e2561b;--ok:#1f8a4c;--warn:#a86b00;--err:#c0392b}
+@media (prefers-color-scheme:dark){:root{--bg:#141413;--card:#1e1e1c;--fg:#ecebe6;--muted:#9a998f;--line:#302f2b;--accent:#f07a45;--ok:#4cc27d;--warn:#e0a53a;--err:#e8705f}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.5 -apple-system,system-ui,"Segoe UI",sans-serif}
+main{max-width:860px;margin:0 auto;padding:32px 16px}h1{margin:0 0 4px;font-size:24px}h2{font-size:16px;margin:0 0 10px}
+p.sub{margin:0 0 20px;color:var(--muted)}a{color:var(--accent)}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:20px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin-bottom:12px}
+label.f{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--muted)}
+input,select,textarea{font:inherit;color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px 10px;width:100%}
+textarea{min-height:260px;resize:vertical;line-height:1.5}
+.ph{font-size:13px;color:var(--muted);margin:8px 0 0}.ph code{background:var(--bg);border:1px solid var(--line);border-radius:5px;padding:0 5px;margin-right:4px;cursor:pointer}
+.row2{display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end}.row2 select,.row2 input{width:auto;flex:1;min-width:160px}
+.status{font-size:13px;color:var(--muted);margin:10px 0 0;min-height:1.5em}.status.err{color:var(--err)}
+.bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;position:sticky;top:0;background:var(--bg);padding:8px 0;z-index:1;align-items:center}
+.bar input{flex:1;min-width:180px;width:auto;background:var(--card)}.bar select{width:auto;background:var(--card)}
+.chk{display:flex;gap:6px;align-items:center;font-size:14px;color:var(--muted);white-space:nowrap}.chk input{width:auto}
+details{background:var(--card);border:1px solid var(--line);border-radius:10px;margin-bottom:8px}details.sent{opacity:.55}
+summary{cursor:pointer;padding:12px 14px;display:flex;gap:10px;align-items:center;list-style:none}summary::-webkit-details-marker{display:none}
+summary::before{content:"▸";color:var(--muted)}details[open] summary::before{content:"▾"}
+.name{font-weight:600}.meta{color:var(--muted);font-size:13px;margin-left:auto;text-align:right}
+.badge{font-size:12px;padding:1px 8px;border-radius:99px;border:1px solid currentColor;white-space:nowrap}
+.valid{color:var(--ok)}.unknown,.guess{color:var(--warn)}.site{color:var(--accent)}.none{color:var(--muted)}
+.body{padding:0 14px 14px;border-top:1px solid var(--line)}.r{margin:10px 0 0;font-size:14px;overflow-wrap:anywhere}.r b{color:var(--muted);font-weight:500;display:inline-block;width:64px}
+.one{color:var(--muted);font-size:14px;margin:10px 0 0}
+pre{white-space:pre-wrap;font:inherit;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:12px;margin:10px 0}
+.acts{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+button,a.btn{font:inherit;font-size:13px;cursor:pointer;border-radius:8px;padding:6px 12px;border:1px solid var(--line);background:var(--card);color:var(--fg);text-decoration:none}
+button.primary{background:var(--accent);border-color:var(--accent);color:#fff}button:disabled{opacity:.5;cursor:default}
+a.lnk{color:var(--muted);font-size:13px}
+.tab-btn{font:inherit;font-size:12px;padding:4px 10px;border-radius:6px;border:1px solid var(--line);background:var(--card);color:var(--muted);cursor:pointer;transition:all .15s ease}
+.tab-btn:hover{color:var(--fg);border-color:var(--fg)}
+.tab-btn.active{background:var(--fg);color:var(--bg);border-color:var(--fg);font-weight:600}
+footer{color:var(--muted);font-size:13px;margin-top:32px}
+</style></head><body><main>
+<header style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;margin-bottom:18px">
+  <div style="flex:1;min-width:280px">
+    <h1 style="margin:0">YC Founder Outreach</h1>
+    <p class="sub" style="margin:4px 0 0">Pick a YC batch, find founder emails, and write personalized cold emails. Everything you type stays in your browser.</p>
+  </div>
+  <div style="display:flex;gap:8px;align-items:center;margin-top:4px">
+    <button id="exportCsvBtn" type="button" title="Download your outreach pipeline as an Excel / CSV spreadsheet">📊 Export CSV (Excel)</button>
+    <button id="exportBtn" type="button" title="Download a JSON backup to restore on another computer">💾 Backup (JSON)</button>
+    <button id="importBtn" type="button" title="Restore your templates and CRM pipeline from a JSON backup">📂 Restore</button>
+    <input type="file" id="importFile" accept=".json" style="display:none">
+  </div>
+</header>
+
+<section class="panel">
+  <h2>1. Your details</h2>
+  <div class="grid">
+    <label class="f">Your name<input data-k="my_name" placeholder="Jane Doe" autocomplete="name"></label>
+    <label class="f">My skills / role<input data-k="my_skills" placeholder="Full-Stack, React, Python, TypeScript"></label>
+    <label class="f">Portfolio / website<input data-k="portfolio" placeholder="https://..."></label>
+    <label class="f">GitHub<input data-k="github" placeholder="https://github.com/..."></label>
+    <label class="f">Resume link<input data-k="resume" placeholder="https://..."></label>
+    <label class="f">AI API Key (Gemini / OpenAI / Groq)<input data-k="ai_key" type="password" placeholder="Gemini key, sk-..., or gsk_..." autocomplete="off"></label>
+  </div>
+  <p class="ph" style="margin:4px 0 8px">AI Key is optional: Groq, Google Gemini, and OpenAI are supported. If Gemini is experiencing high demand, it automatically falls back to Groq for instant generation.</p>
+  <h2>2. Email sequence templates</h2>
+  <div style="display:flex;gap:6px;margin-bottom:12px;border-bottom:1px solid var(--line);padding-bottom:10px">
+    <button type="button" class="tab-btn active" data-tpl-step="1">Step 1: Opener</button>
+    <button type="button" class="tab-btn" data-tpl-step="2">Step 2: Bump (+3d)</button>
+    <button type="button" class="tab-btn" data-tpl-step="3">Step 3: Breakup (+7d)</button>
+  </div>
+  <label class="f">Subject<input id="tplSubj"></label>
+  <label class="f" style="margin-top:10px">Body<textarea id="tplBody"></textarea></label>
+  <p class="ph" id="vars">Click to insert: <code>{first_name}</code><code>{company}</code><code>{hook}</code><code>{tech_stack}</code><code>{one_liner}</code><code>{batch}</code><code>{my_name}</code><code>{my_skills}</code><code>{portfolio}</code><code>{github}</code><code>{resume}</code>
+  &nbsp;<button id="reset" type="button">Reset step template</button></p>
+  <p class="ph">Lines like <code>resume: {resume}</code> are dropped when left empty. <code>{hook}</code> uses your 1-click AI observation; <code>{tech_stack}</code> inserts detected technologies.</p>
+</section>
+
+<section class="panel">
+  <h2>3. Pick a YC batch</h2>
+  <div class="row2">
+    <select id="batch" aria-label="YC batch"><option value="">Loading batches…</option></select>
+    <button id="load" class="primary" type="button" disabled>Load companies</button>
+  </div>
+  <p class="status" id="loadStatus"></p>
+</section>
+
+<section class="panel">
+  <h2>4. Find verified emails <span style="font-weight:400;color:var(--muted)">(optional)</span></h2>
+  <p class="ph" style="margin:0 0 10px">Without this you get emails listed on company sites plus pattern guesses like <code>first@domain</code> (right about 80% of the time). For verified emails, paste your own
+    <a href="https://console.apify.com/settings/integrations" target="_blank" rel="noopener">Apify API token</a>. Lookups run from your browser straight to Apify on your account; the token is never sent to this site's server and isn't saved.</p>
+  <div class="row2">
+    <label class="f" style="flex:2">Apify token<input id="token" type="password" placeholder="apify_api_..." autocomplete="off"></label>
+    <label class="f" style="flex:1">Max USD per run (50 founders)<input id="cap" type="number" min="0.1" step="0.1" value="1"></label>
+    <button id="enrich" type="button" disabled>Find emails</button>
+    <button id="enrichCancel" type="button" style="display:none;background:var(--err);color:#fff;border-color:var(--err)">Stop</button>
+  </div>
+  <p class="status" id="enrichStatus"></p>
+</section>
+
+<div class="bar">
+  <input id="q" placeholder="Search company or founder" aria-label="Search">
+  <select id="st" aria-label="Email type"><option value="">All emails</option><option value="valid">Verified</option><option value="unknown">Unverified</option><option value="site">Found on site</option><option value="guess">Guess</option><option value="none">No email</option></select>
+  <select id="crmFilter" aria-label="Pipeline filter">
+    <option value="">All Pipeline</option>
+    <option value="due">⏰ Follow-up Due</option>
+    <option value="step1">📩 Step 1 Sent</option>
+    <option value="step2">📬 Step 2 Sent</option>
+    <option value="replied">🎉 Replied</option>
+    <option value="uncontacted">⚪ Uncontacted</option>
+    <option value="passed">✖ Passed</option>
+  </select>
+  <label class="chk"><input type="checkbox" id="hideSent"> hide sent</label>
+  <button id="all" type="button">Expand all</button>
+</div>
+<div id="metricsBar" style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin:0 0 12px;padding:8px 12px;background:var(--card);border:1px solid var(--line);border-radius:8px;font-size:13px">
+  <span id="mTotal">0 Total</span>
+  <span style="color:var(--line)">|</span>
+  <span id="mSent" style="color:var(--accent);font-weight:600">0 Sent</span>
+  <span style="color:var(--line)">|</span>
+  <span id="mDue" style="color:var(--warn);font-weight:700">0 Follow-up Due</span>
+  <span style="color:var(--line)">|</span>
+  <span id="mReplied" style="color:var(--ok);font-weight:700">0 Replied</span>
+  <span id="shown" style="margin-left:auto;color:var(--muted)"></span>
+</div>
+<div id="list"></div>
+<p style="text-align:center"><button id="more" class="primary" type="button" hidden>Load more</button></p>
+<footer>Open source. Company and founder data comes from YC's public directory. Please write to people one at a time and respect "no".</footer>
+</main>
+<script>
+const DEFAULTS = {
+  my_name: "", my_skills: "", portfolio: "", github: "", resume: "", ai_key: "",
+  subject: "interested in {company}",
+  body: `Hey {first_name},
+
+saw {company} and {hook} really stood out.
+
+[1-2 lines about you: what you're doing now and what you've built]
+
+[1 line on relevant experience: stack, projects, open source]
+
+would love to explore if there's a role at {company}.
+
+- {my_name}
+portfolio: {portfolio}
+github: {github}
+resume: {resume}`,
+  subject_step2: "Re: interested in {company}",
+  body_step2: `Hey {first_name},
+
+following up on my note below in case it got buried.
+
+really excited about what you're building with {company} and would love to chat if you're looking for an engineer with experience in {my_skills}.
+
+- {my_name}
+portfolio: {portfolio}
+github: {github}`,
+  subject_step3: "Re: interested in {company}",
+  body_step3: `Hey {first_name},
+
+assuming you're heads down or not hiring right now, so I won't clutter your inbox further!
+
+if things change or you need an engineer who can move fast on {tech_stack}, feel free to reach out anytime.
+
+best of luck with {company}!
+
+- {my_name}
+portfolio: {portfolio}
+github: {github}`
+};
+const KEY = "yc-outreach-v2";
+const ACTOR = "snipercoder~email-finder-by-name-and-domain";
+const APIFY = "https://api.apify.com/v2";
+const store = { get(k, d) { try { return JSON.parse(localStorage.getItem(k)) ?? d } catch { return d } },
+                set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)) } catch {} } };
+let tpl = Object.assign({}, DEFAULTS, store.get(KEY, {}));
+let sent = new Set(store.get(KEY + "-sent", []));
+let crm = store.get(KEY + "-crm", {});
+if (Object.keys(crm).length === 0 && sent.size > 0) {
+  sent.forEach(name => { crm[name] = { status: "step1", at: Date.now() - 4 * 86400000 }; });
+  store.set(KEY + "-crm", crm);
+}
+
+function getCrmStatus(c) {
+  const info = crm[c.name];
+  if (!info || !info.status || info.status === "uncontacted") return "uncontacted";
+  if (info.status === "step1" && info.at) {
+    const daysPassed = (Date.now() - info.at) / (1000 * 60 * 60 * 24);
+    if (daysPassed >= 3) return "due";
+  }
+  return info.status;
+}
+
+function getStatusBadge(status) {
+  if (status === "due") return `<span class="badge" style="background:#e0a53a;color:#141413;font-weight:700;border:none">⏰ Follow-up Due</span>`;
+  if (status === "step1") return `<span class="badge" style="color:var(--accent);border-color:var(--accent)">Step 1 Sent</span>`;
+  if (status === "step2") return `<span class="badge" style="color:var(--accent);border-color:var(--accent)">Step 2 Sent</span>`;
+  if (status === "replied") return `<span class="badge" style="background:var(--ok);color:#fff;font-weight:700;border:none">🎉 Replied</span>`;
+  if (status === "passed") return `<span class="badge" style="color:var(--muted);border-color:var(--muted)">Passed</span>`;
+  return "";
+}
+
+function setCrmStatus(cName, status, d) {
+  if (status === "uncontacted") {
+    delete crm[cName];
+    sent.delete(cName);
+  } else {
+    const existing = crm[cName] || {};
+    let at = existing.at || Date.now();
+    if (status === "step1" && (!existing.at || existing.status === "uncontacted")) at = Date.now();
+    crm[cName] = Object.assign({}, existing, { status, at });
+    if (status === "step2") crm[cName].step2_at = Date.now();
+    sent.add(cName);
+  }
+  store.set(KEY + "-crm", crm);
+  store.set(KEY + "-sent", [...sent]);
+  if (d) {
+    d.dataset.crm = status;
+    d.classList.toggle("sent", status !== "uncontacted");
+    d.classList.remove("crm-uncontacted", "crm-step1", "crm-due", "crm-step2", "crm-replied", "crm-passed");
+    d.classList.add(`crm-${status}`);
+    const badgeEl = d.querySelector(".crm-badge");
+    if (badgeEl) badgeEl.innerHTML = getStatusBadge(status);
+    const sel = d.querySelector('[data-a="crm-sel"]');
+    if (sel && sel.value !== status) sel.value = status;
+    filter();
+  } else {
+    render();
+  }
+}
+let ALL = [], DATA = [], batch = "";
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const url = s => /^https?:\/\//i.test(s || "") ? esc(s) : "";
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const say = (id, msg, err) => { $(id).textContent = msg; $(id).classList.toggle("err", !!err) };
+
+async function api(params) {
+  const r = await fetch("/api/yc?" + new URLSearchParams(params));
+  const j = await r.json().catch(() => ({ error: `HTTP ${r.status}` }));
+  if (!r.ok) throw new Error(j.error || `HTTP ${r.status}`);
+  return j;
+}
+
+// Best email for a founder: verified > unverified (Apify) > on the company site > pattern guess
+function best(f) {
+  if (f.apify_email) return { email: f.apify_email, kind: f.apify_status === "valid" ? "valid" : "unknown", label: f.apify_status === "valid" ? "verified" : "unverified" };
+  if (f.emails_found?.length) return { email: f.emails_found[0], kind: "site", label: "on site" };
+  if (f.email_guesses?.length) return { email: f.email_guesses[0], kind: "guess", label: "guess" };
+  return { email: "", kind: "none", label: "no email" };
+}
+const RANK = { valid: 0, unknown: 1, site: 2, guess: 3, none: 4 };
+// Primary contact: best email first, then CEO
+function contacts(c) {
+  return [...(c.founders || [])].sort((a, b) => (RANK[best(a).kind] - RANK[best(b).kind]) || (!/ceo/i.test(a.title) - !/ceo/i.test(b.title)));
+}
+
+function fill(text, c) {
+  const f = contacts(c)[0] || { name: "" };
+  const rawHook = c.ai_hook || c.one_liner || "what you're building";
+  const hook = rawHook.replace(/\.$/, "").toLowerCase();
+  const techStr = (c.tech_stack && c.tech_stack.length) ? c.tech_stack.join(", ") : "";
+  const vars = {
+    first_name: f.name.split(" ")[0] || "there",
+    company: c.name,
+    one_liner: (c.one_liner || "what you're building").replace(/\.$/, "").toLowerCase(),
+    hook: hook,
+    tech_stack: techStr || "your stack",
+    careers_url: c.careers_url || "",
+    batch: c.batch,
+    my_name: tpl.my_name,
+    my_skills: tpl.my_skills || "software engineering",
+    portfolio: tpl.portfolio,
+    github: tpl.github,
+    resume: tpl.resume
+  };
+  const out = text.replace(/\{(\w+)\}/g, (m, k) => k in vars ? vars[k] : m);
+  return out.split("\n").filter(l => !/^\s*[\w ]+:\s*$/.test(l)).join("\n");
+}
+
+function render() {
+  const mySkills = (tpl.my_skills || "").toLowerCase().split(/[\s,]+/).filter(Boolean);
+  const openIndexes = new Set([...document.querySelectorAll("details[open]")].map(d => d.dataset.i));
+  $("list").innerHTML = DATA.map((c, i) => {
+    const fs = contacts(c), f = fs[0], b = f ? best(f) : { kind: c.founders ? "none" : "", label: c.error ? "error" : c.founders ? "no email" : "loading…" };
+    const key = (c.name + " " + fs.map(o => o.name).join(" ")).toLowerCase();
+    const techTags = (c.tech_stack || []).map(t => {
+      const isMatch = mySkills.some(s => t.toLowerCase().includes(s) || s.includes(t.toLowerCase()));
+      return `<span class="badge ${isMatch ? "valid" : "none"}" style="font-size:11px;padding:0 6px">${isMatch ? "🔥 " : ""}${esc(t)}</span>`;
+    }).join(" ");
+    const status = getCrmStatus(c);
+    let statusBadge = "";
+    if (status === "due") statusBadge = `<span class="badge" style="background:#e0a53a;color:#141413;font-weight:700;border:none">⏰ Follow-up Due</span>`;
+    else if (status === "step1") statusBadge = `<span class="badge" style="color:var(--accent);border-color:var(--accent)">Step 1 Sent</span>`;
+    else if (status === "step2") statusBadge = `<span class="badge" style="color:var(--accent);border-color:var(--accent)">Step 2 Sent</span>`;
+    else if (status === "replied") statusBadge = `<span class="badge" style="background:var(--ok);color:#fff;font-weight:700;border:none">🎉 Replied</span>`;
+    else if (status === "passed") statusBadge = `<span class="badge" style="color:var(--muted);border-color:var(--muted)">Passed</span>`;
+
+    const isOpen = openIndexes.has(String(i)) ? "open" : "";
+    return `<details data-i="${i}" data-k="${esc(key)}" data-s="${b.kind}" data-crm="${status}" data-seq="1" class="${status !== "uncontacted" ? "sent" : ""} crm-${status}" ${isOpen}>
+      <summary><span class="name">${esc(c.name)}</span><span class="badge ${b.kind || "none"}">${esc(b.label)}</span>
+      <span class="crm-badge">${getStatusBadge(status)}</span>
+      <span class="meta">${esc(f?.name || "")}<br>${esc(c.batch)}</span></summary>
+      <div class="body">
+        <p class="one">${esc(c.one_liner)}${url(c.website) ? ` · <a class="lnk" href="${url(c.website)}" target="_blank" rel="noopener">website</a>` : ""}${c.careers_url ? ` · <a class="lnk" href="${url(c.careers_url)}" target="_blank" rel="noopener" style="font-weight:600;color:var(--ok)">Careers ↗</a>` : ""} · <a class="lnk" href="https://www.ycombinator.com/companies/${esc(c.slug)}" target="_blank" rel="noopener">YC</a>${c.launch_hn ? ` · <a class="lnk hn-link" href="${c.launch_hn.url}" target="_blank" rel="noopener" style="color:#ff6600;font-weight:600">Launch HN (${c.launch_hn.points} pts) ↗</a>` : ` · <a class="lnk hn-link" target="_blank" rel="noopener" style="color:#ff6600;font-weight:600;display:none"></a>`}${url(f?.linkedin) ? ` · <a class="lnk" href="${url(f.linkedin)}" target="_blank" rel="noopener">LinkedIn</a>` : ""}${url(f?.twitter || c.twitter) ? ` · <a class="lnk" href="${url(f?.twitter || c.twitter)}" target="_blank" rel="noopener">X</a>` : ""}</p>
+        ${techTags ? `<div style="margin:4px 0 8px;display:flex;gap:4px;flex-wrap:wrap;align-items:center"><span style="font-size:12px;color:var(--muted)">Tech:</span> ${techTags}</div>` : ""}
+        <div class="hook-box" style="margin:8px 0;padding:6px 10px;background:var(--bg);border:1px dashed var(--line);border-radius:6px;font-size:13px;display:flex;align-items:center;justify-content:space-between;gap:8px">
+          <span class="hook-txt" style="overflow:hidden;text-overflow:ellipsis"><b>Hook:</b> ${esc(c.ai_hook || c.one_liner || "what you're building")}</span>
+          <div style="display:flex;gap:6px;flex-shrink:0">
+            ${c.ai_hook ? `<button class="btn" data-a="reset-hook" type="button" style="padding:2px 8px;font-size:12px;white-space:nowrap">↩ Original Pitch</button>` : ""}
+            <button class="btn" data-a="edit-hook" type="button" style="padding:2px 8px;font-size:12px;white-space:nowrap">✏️ Edit</button>
+            <button class="btn hook-btn" data-a="gen-hook" type="button" style="padding:2px 8px;font-size:12px;white-space:nowrap">${c.ai_hook ? "✨ Regenerate" : "✨ AI Hook"}</button>
+          </div>
+        </div>
+        ${c.error ? `<p class="status err">${esc(c.error)}</p>` : ""}
+        ${fs.map(o => { const e = best(o); return `<div class="r"><b>${o === f ? "To" : "Also"}</b>${esc(o.name)}${o.title ? ` (${esc(o.title)})` : ""} · ${esc(e.email || "no email")} <span class="badge ${e.kind}">${e.label}</span></div>` }).join("")}
+        <div style="display:flex;gap:6px;align-items:center;margin:12px 0 6px">
+          <span style="font-size:12px;color:var(--muted);font-weight:600">Sequence:</span>
+          <button class="tab-btn active" data-a="seq-tab" data-seq="1" type="button">Step 1: Opener</button>
+          <button class="tab-btn" data-a="seq-tab" data-seq="2" type="button">Step 2: Bump (+3d)</button>
+          <button class="tab-btn" data-a="seq-tab" data-seq="3" type="button">Step 3: Breakup (+7d)</button>
+        </div>
+        <div class="r"><b>Subject</b><span class="subj"></span></div>
+        <pre></pre>
+        <div class="acts">
+          <button class="primary" data-a="body" type="button">Copy body</button>
+          <button data-a="to" type="button">Copy email</button>
+          <button data-a="subject" type="button">Copy subject</button>
+          <button data-a="li-note" type="button" title="Copy 250-char personalized LinkedIn connection note">Copy LinkedIn note</button>
+          <a class="btn gmail" target="_blank" rel="noopener" href="#" style="background:#ea4335;border-color:#ea4335;color:#fff">Open in Gmail ↗</a>
+          <a class="btn mail" href="#">Mail app</a>
+          ${url(f?.linkedin) ? `<a class="btn" href="${url(f.linkedin)}" target="_blank" rel="noopener">LinkedIn ↗</a>` : ""}
+          ${url(f?.twitter || c.twitter) ? `<a class="btn" href="${url(f?.twitter || c.twitter)}" target="_blank" rel="noopener">X ↗</a>` : ""}
+          <div style="display:inline-flex;align-items:center;gap:6px;margin-left:auto">
+            <span style="font-size:12px;color:var(--muted);font-weight:600">Status:</span>
+            <select class="crm-select" data-a="crm-sel" style="width:auto;padding:3px 8px;font-size:12px;border-radius:6px;background:var(--bg)">
+              <option value="uncontacted" ${status === "uncontacted" ? "selected" : ""}>⚪ Uncontacted</option>
+              <option value="step1" ${status === "step1" ? "selected" : ""}>📩 Step 1 Sent</option>
+              <option value="due" ${status === "due" ? "selected" : ""}>⏰ Follow-up Due</option>
+              <option value="step2" ${status === "step2" ? "selected" : ""}>📬 Step 2 Sent</option>
+              <option value="replied" ${status === "replied" ? "selected" : ""}>🎉 Replied</option>
+              <option value="passed" ${status === "passed" ? "selected" : ""}>✖ Passed</option>
+            </select>
+          </div>
+        </div>
+      </div></details>`;
+  }).join("");
+  update();
+  filter();
+}
+
+// Fill drafts lazily when opened, and refresh open ones when the template changes
+function draft(d) {
+  const c = DATA[d.dataset.i], to = contacts(c)[0];
+  const toEmail = to ? best(to).email : "";
+  const seq = d.dataset.seq || "1";
+  const sKey = seq === "1" ? "subject" : `subject_step${seq}`;
+  const bKey = seq === "1" ? "body" : `body_step${seq}`;
+  const subject = fill(tpl[sKey] ?? DEFAULTS[sKey], c);
+  const body = fill(tpl[bKey] ?? DEFAULTS[bKey], c);
+  d.querySelector(".subj").textContent = subject;
+  d.querySelector("pre").textContent = body;
+  const mailEl = d.querySelector(".mail");
+  if (mailEl) mailEl.href = `mailto:${encodeURIComponent(toEmail)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  const gmailEl = d.querySelector(".gmail");
+  if (gmailEl) gmailEl.href = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(toEmail)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+}
+function update() { document.querySelectorAll("details[open]").forEach(draft) }
+
+function filter() {
+  const q = $("q").value.trim().toLowerCase(), st = $("st").value, hide = $("hideSent").checked, cf = $("crmFilter").value;
+  let n = 0;
+  let counts = { total: DATA.length, sent: 0, due: 0, replied: 0 };
+  DATA.forEach(c => {
+    const s = getCrmStatus(c);
+    if (s === "step1" || s === "step2" || s === "due") counts.sent++;
+    if (s === "due") counts.due++;
+    if (s === "replied") counts.replied++;
+  });
+  document.querySelectorAll("details[data-i]").forEach(d => {
+    const c = DATA[d.dataset.i];
+    const s = getCrmStatus(c);
+    const matchQ = !q || d.dataset.k.includes(q);
+    const matchSt = !st || d.dataset.s === st;
+    const matchHide = !(hide && s !== "uncontacted");
+    const matchCrm = !cf || s === cf;
+    const ok = matchQ && matchSt && matchHide && matchCrm;
+    d.style.display = ok ? "" : "none";
+    if (ok) n++;
+  });
+  if ($("mTotal")) $("mTotal").textContent = `${DATA.length} Total`;
+  if ($("mSent")) $("mSent").textContent = `${counts.sent} Sent`;
+  if ($("mDue")) $("mDue").textContent = `${counts.due} Follow-up Due`;
+  if ($("mReplied")) $("mReplied").textContent = `${counts.replied} Replied`;
+  $("shown").textContent = DATA.length ? `${n} of ${DATA.length} shown` : "";
+}
+
+// ALL = every company in the batch; DATA = the ones whose founders are loaded (what the list shows)
+const PAGE = 20;
+const save = () => store.set(`${KEY}-batch-${batch}`, ALL);
+const busy = on => { $("load").disabled = $("more").disabled = on; $("enrich").disabled = on || !DATA.length };
+function progress() {
+  const left = ALL.length - DATA.length, failed = DATA.filter(c => c.error).length;
+  say("loadStatus", `${DATA.length} of ${ALL.length} companies loaded${failed ? `, ${failed} couldn't be loaded` : ""}.`, failed > 0);
+  $("more").hidden = !left;
+  $("more").textContent = `Load ${Math.min(PAGE, left)} more (${left} left)`;
+}
+
+async function loadBatch() {
+  batch = $("batch").value;
+  if (!batch) return;
+  busy(true);
+  ALL = store.get(`${KEY}-batch-${batch}`, null) || [];
+  try {
+    if (!ALL.length) {
+      say("loadStatus", "Loading companies…");
+      ALL = (await api({ action: "companies", batch })).sort((a, b) => b.launched_at - a.launched_at);
+      save();
+    }
+  } catch (e) {
+    busy(false);
+    return say("loadStatus", `Couldn't load this batch: ${e.message}`, true);
+  }
+  DATA = ALL.filter(c => c.founders || c.error);
+  render();
+  if (!DATA.length) return loadMore();
+  progress(); busy(false);
+}
+
+// Founders come from each company's YC page, so load them PAGE at a time: 10 per request, 2 requests at once
+async function loadMore() {
+  const next = ALL.filter(c => !c.founders && !c.error).slice(0, PAGE);
+  if (!next.length) return progress();
+  busy(true);
+  const chunks = [];
+  for (let i = 0; i < next.length; i += 10) chunks.push(next.slice(i, i + 10));
+  say("loadStatus", `Loading founders for ${next.length} companies…`);
+  await Promise.all(chunks.map(async chunk => {
+    try {
+      const res = await api({ action: "founders", slugs: chunk.map(c => c.slug).join(",") });
+      res.forEach((r, j) => Object.assign(chunk[j], r));
+    } catch (e) { chunk.forEach(c => c.error = `Couldn't load founders: ${e.message}`) }
+    DATA = ALL.filter(c => c.founders || c.error);
+    render();
+  }));
+  save(); progress(); busy(false);
+}
+
+async function apify(method, path, token, body) {
+  const r = await fetch(APIFY + path, { method, headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+                                        body: body ? JSON.stringify(body) : undefined });
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(j.error?.message || `Apify HTTP ${r.status}`);
+  return j;
+}
+
+let enrichCancelled = false, currentRunId = null;
+$("enrichCancel").onclick = async () => {
+  enrichCancelled = true;
+  say("enrichStatus", "Cancelling run…");
+  if (currentRunId) {
+    const token = $("token").value.trim();
+    await apify("POST", `/actor-runs/${currentRunId}/abort`, token).catch(() => {});
+  }
+};
+
+async function enrich() {
+  const token = $("token").value.trim(), cap = Math.max(0.1, +$("cap").value || 1);
+  if (!token) return say("enrichStatus", "Paste your Apify token first.", true);
+  const people = DATA.flatMap(c => (c.founders || []).filter(f => f.name && c.domain && !f.apify_checked).map(f => ({ f, name: f.name, domain: c.domain })));
+  if (!people.length) return say("enrichStatus", "Nothing left to look up in this batch.");
+  const runs = Math.ceil(people.length / 50);
+  if (!confirm(`Look up ${people.length} founders on your Apify account? That's ${runs} run${runs > 1 ? "s" : ""}, each capped at $${cap}.`)) return;
+  busy(true);
+  enrichCancelled = false;
+  $("enrichCancel").style.display = "inline-block";
+  let found = 0;
+  try {
+    for (let i = 0; i < people.length; i += 50) {
+      if (enrichCancelled) throw new Error("Cancelled by user");
+      const chunk = people.slice(i, i + 50);
+      say("enrichStatus", `Run ${i / 50 + 1}/${runs}: starting…`);
+      let run = (await apify("POST", `/acts/${ACTOR}/runs?maxTotalChargeUsd=${cap}&memory=1024&timeout=60`, token,
+                             { names: chunk.map(p => p.name), domains: chunk.map(p => p.domain) })).data;
+      currentRunId = run.id;
+      let waitCount = 0;
+      while (["READY", "RUNNING"].includes(run.status)) {
+        if (enrichCancelled) {
+          await apify("POST", `/actor-runs/${run.id}/abort`, token).catch(() => {});
+          throw new Error("Cancelled by user");
+        }
+        waitCount++;
+        if (waitCount > 12) {
+          await apify("POST", `/actor-runs/${run.id}/abort`, token).catch(() => {});
+          throw new Error("Apify actor timed out. The actor may be stuck in a captcha loop.");
+        }
+        say("enrichStatus", `Run ${i / 50 + 1}/${runs}: ${run.status.toLowerCase()} (${waitCount * 5}s)…`);
+        await sleep(5000);
+        run = (await apify("GET", `/actor-runs/${run.id}`, token)).data;
+      }
+      currentRunId = null;
+      if (run.status !== "SUCCEEDED") throw new Error(`Apify run ended as ${run.status}`);
+      const items = await apify("GET", `/datasets/${run.defaultDatasetId}/items?clean=true&format=json`, token);
+      for (const p of chunk) {
+        const hit = items.find(it => it.Found && it.Email && String(it.Name).toLowerCase() === p.name.toLowerCase() && String(it.Domain).toLowerCase() === p.domain);
+        p.f.apify_checked = true;
+        if (hit) { p.f.apify_email = String(hit.Email).toLowerCase(); p.f.apify_status = hit.Validation || ""; found++ }
+      }
+      save(); render();
+    }
+    say("enrichStatus", `Done: found ${found} of ${people.length} emails.`);
+  } catch (e) {
+    say("enrichStatus", `Stopped: ${e.message}. Found ${found} so far.`, true);
+  } finally {
+    currentRunId = null;
+    $("enrichCancel").style.display = "none";
+    busy(false);
+  }
+}
+
+let resolvedGeminiModel = store.get(KEY + "-gemini-model", null);
+if (resolvedGeminiModel && resolvedGeminiModel.includes("2.0-flash")) {
+  resolvedGeminiModel = null;
+  store.set(KEY + "-gemini-model", null);
+}
+
+async function getAvailableGeminiModels(apiKey) {
+  try {
+    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
+    const data = await res.json();
+    if (data.models && Array.isArray(data.models)) {
+      return data.models
+        .filter(m => (m.supportedGenerationMethods || []).includes("generateContent"))
+        .map(m => m.name.replace(/^models\//, ""))
+        .filter(m => !m.includes("2.0-flash"));
+    }
+  } catch (e) {
+    console.warn("Could not list Gemini models:", e);
+  }
+  return [];
+}
+
+async function callGemini(apiKey, prompt) {
+  let modelList = [];
+  if (resolvedGeminiModel && !resolvedGeminiModel.includes("2.0-flash")) {
+    modelList.push(resolvedGeminiModel);
+  }
+  const liveModels = await getAvailableGeminiModels(apiKey);
+  const flashModels = liveModels.filter(m => m.includes("flash"));
+  const otherModels = liveModels.filter(m => !m.includes("flash"));
+  const fallbackList = [
+    "gemini-3.8-flash",
+    "gemini-2.5-flash",
+    "gemini-1.5-flash",
+    "gemini-1.5-flash-8b",
+    "gemini-1.5-pro"
+  ];
+  const uniqueModels = [...new Set([
+    ...modelList,
+    ...flashModels,
+    ...otherModels,
+    ...fallbackList
+  ])].filter(m => !m.includes("2.0-flash"));
+
+  let lastError = null;
+  for (let i = 0; i < uniqueModels.length; i++) {
+    const model = uniqueModels[i];
+    try {
+      const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: prompt }] }],
+          generationConfig: { maxOutputTokens: 60, temperature: 0.7 }
+        })
+      });
+      const data = await res.json();
+      if (data.error) {
+        const errMsg = data.error.message || "";
+        const match = errMsg.match(/use models\/(gemini-[\w\.-]+)/i);
+        if (match && match[1] && !uniqueModels.includes(match[1]) && !match[1].includes("2.0-flash")) {
+          uniqueModels.push(match[1]);
+        }
+        throw new Error(errMsg);
+      }
+      const text = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim().replace(/^["']|["']$/g, "") || "";
+      if (text) {
+        resolvedGeminiModel = model;
+        store.set(KEY + "-gemini-model", model);
+        return text;
+      }
+    } catch (err) {
+      lastError = err;
+      if (/not found|no longer available|deprecated|not supported/i.test(err.message)) {
+        continue;
+      }
+      throw err;
+    }
+  }
+  throw lastError || new Error("No compatible Gemini model found for this key");
+}
+
+const GROQ_FALLBACK_MODEL = "openai/gpt-oss-120b";
+
+async function callGroq(prompt, customKey) {
+  const key = customKey || (tpl.ai_key && tpl.ai_key.startsWith("gsk_") ? tpl.ai_key : "");
+  if (!key) throw new Error("Please enter a Groq API key (gsk_...) or Gemini key in Section 1");
+  const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", "Authorization": "Bearer " + key },
+    body: JSON.stringify({
+      model: GROQ_FALLBACK_MODEL,
+      messages: [
+        { role: "system", content: "You write ultra-concise, natural observations for cold emails from a software engineer to a YC startup founder. No buzzwords, no praise, lowercase style preferred, max 20 words." },
+        { role: "user", content: prompt }
+      ],
+      max_tokens: 350,
+      temperature: 0.7
+    })
+  });
+  const data = await res.json();
+  if (data.error) throw new Error(data.error.message || "Groq error");
+  return data.choices?.[0]?.message?.content?.trim().replace(/^["']|["']$/g, "") || "";
+}
+
+async function generateHook(c, d, btn) {
+  const apiKey = (tpl.ai_key || "").trim();
+  const f = contacts(c)[0] || { name: "", title: "" };
+  const prompt = `You are writing a cold email from a software engineer to a YC founder.
+The sentence in the email is:
+"saw ${c.name} and {hook} really stood out."
+
+Task: Fill in ONLY {hook}.
+{hook} MUST be a short noun phrase (6 to 14 words, lowercase, no period) that grammatically and logically completes:
+"saw ${c.name} and {hook} really stood out."
+
+Few-shot examples:
+- Company: Resend | One-liner: Email API for developers using React
+  hook: how clean the developer experience is around React email templates
+- Company: Replicate | One-liner: Run AI with an API
+  hook: how easy you've made it for developers to run open-source models
+- Company: Supabase | One-liner: The open source Firebase alternative
+  hook: how quickly engineers can spin up real-time Postgres backends
+- Company: Stripe | One-liner: Financial infrastructure for the internet
+  hook: your developer-first approach to global payments infrastructure
+
+Now for this company:
+Company: ${c.name}
+One-liner: ${c.one_liner}
+Founder: ${f.name} (${f.title})
+Applicant Skills: ${tpl.my_skills || "software engineering"}
+
+Rules:
+- Output ONLY the lowercase noun phrase (6-14 words).
+- DO NOT include quotes or periods.
+- DO NOT start with "I saw" or "I noticed". Start with words like "how", "the way you", "your focus on", or "what you're building for".`;
+
+  const oldText = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = "Generating…";
+  try {
+    let hook = "";
+    if (apiKey.startsWith("gsk_")) {
+      hook = await callGroq(prompt, apiKey);
+    } else if (apiKey.startsWith("sk-")) {
+      try {
+        const res = await fetch("https://api.openai.com/v1/chat/completions", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "Authorization": `Bearer ${apiKey}` },
+          body: JSON.stringify({
+            model: "gpt-4o-mini",
+            messages: [
+              { role: "system", content: "You write ultra-concise, natural observations for cold emails from a software engineer to a YC startup founder. No buzzwords, no praise, lowercase style preferred, max 20 words." },
+              { role: "user", content: prompt }
+            ],
+            max_tokens: 80,
+            temperature: 0.4
+          })
+        });
+        const data = await res.json();
+        if (data.error) throw new Error(data.error.message || "OpenAI error");
+        hook = data.choices?.[0]?.message?.content || "";
+      } catch (openAiErr) {
+        console.warn("OpenAI failed, falling back to Groq:", openAiErr);
+        hook = await callGroq(prompt);
+      }
+    } else if (apiKey) {
+      try {
+        hook = await callGemini(apiKey, prompt);
+      } catch (geminiErr) {
+        console.warn("Gemini experiencing high demand or error, falling back to Groq:", geminiErr);
+        hook = await callGroq(prompt);
+      }
+    } else {
+      hook = await callGroq(prompt);
+    }
+    hook = hook.replace(/^["']|["']$/g, "").replace(/\.$/, "").trim().toLowerCase();
+    if (!hook) throw new Error("No response generated");
+    c.ai_hook = hook;
+    save();
+    const box = d.querySelector(".hook-box");
+    if (box) {
+      box.innerHTML = `
+        <span class="hook-txt" style="overflow:hidden;text-overflow:ellipsis"><b>Hook:</b> ${esc(hook)}</span>
+        <div style="display:flex;gap:6px;flex-shrink:0">
+          <button class="btn" data-a="reset-hook" type="button" style="padding:2px 8px;font-size:12px;white-space:nowrap">↩ Original Pitch</button>
+          <button class="btn" data-a="edit-hook" type="button" style="padding:2px 8px;font-size:12px;white-space:nowrap">✏️ Edit</button>
+          <button class="btn hook-btn" data-a="gen-hook" type="button" style="padding:2px 8px;font-size:12px;white-space:nowrap">✨ Regenerate</button>
+        </div>`;
+    }
+    draft(d);
+  } catch (err) {
+    alert("AI generation failed: " + err.message);
+    btn.textContent = oldText;
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+function makeLinkedInNote(c) {
+  const f = contacts(c)[0] || { name: "" };
+  const firstName = (f.name.split(" ")[0] || "there").trim();
+  const rawHook = c.ai_hook || c.one_liner || "what you're building";
+  const hook = rawHook.replace(/\.$/, "").toLowerCase();
+  const skills = (tpl.my_skills || "software engineering").trim();
+  let note = `Hi ${firstName} - saw ${c.name} and ${hook} caught my eye. I'm a developer (${skills}). Would love to connect and follow your journey!`;
+  if (note.length > 295) {
+    note = `Hi ${firstName} - loved what you're building with ${c.name}. I'm an engineer specializing in ${skills}. Would love to connect!`;
+  }
+  if (note.length > 295) {
+    note = `Hi ${firstName} - following ${c.name}'s journey closely. Would love to connect!`;
+  }
+  return note;
+}
+
+async function findLaunchHN(c, d) {
+  if (c.launch_hn !== undefined) return;
+  try {
+    const q = encodeURIComponent(`"Launch HN" ${c.name}`);
+    const r = await fetch(`https://hn.algolia.com/api/v1/search?query=${q}&tags=story`);
+    const j = await r.json();
+    const cName = c.name.toLowerCase();
+    const hit = (j.hits || []).find(h => {
+      const t = (h.title || "").toLowerCase();
+      return t.includes("launch hn") && t.includes(cName);
+    });
+    if (hit) {
+      c.launch_hn = { url: `https://news.ycombinator.com/item?id=${hit.objectID}`, points: hit.points || 0 };
+    } else {
+      c.launch_hn = null;
+    }
+    save();
+    const hnEl = d.querySelector(".hn-link");
+    if (hnEl && c.launch_hn) {
+      hnEl.href = c.launch_hn.url;
+      hnEl.textContent = `Launch HN (${c.launch_hn.points} pts) ↗`;
+      hnEl.style.display = "";
+    }
+  } catch (err) {
+    c.launch_hn = null;
+  }
+}
+
+$("list").addEventListener("toggle", e => {
+  if (e.target.open) {
+    draft(e.target);
+    const c = DATA[e.target.dataset.i];
+    if (c) findLaunchHN(c, e.target);
+  }
+}, true);
+$("list").addEventListener("click", e => {
+  if (e.target.closest('[data-a="crm-sel"]')) return;
+  const b = e.target.closest("[data-a]"); if (!b) return;
+  const d = b.closest("details"), c = DATA[d.dataset.i];
+  if (b.dataset.a === "seq-tab") {
+    const step = b.dataset.seq;
+    d.dataset.seq = step;
+    d.querySelectorAll('[data-a="seq-tab"]').forEach(btn => btn.classList.toggle("active", btn.dataset.seq === step));
+    draft(d);
+    return;
+  }
+  if (b.dataset.a === "gen-hook") {
+    generateHook(c, d, b);
+    return;
+  }
+  if (b.dataset.a === "edit-hook") {
+    const current = c.ai_hook || c.one_liner || "what you're building";
+    const edited = prompt("Edit hook observation (lowercase phrase, e.g. 'how clean your api docs are'):", current);
+    if (edited !== null && edited.trim()) {
+      c.ai_hook = edited.trim();
+      save();
+      const box = d.querySelector(".hook-box");
+      if (box) {
+        box.innerHTML = `
+          <span class="hook-txt" style="overflow:hidden;text-overflow:ellipsis"><b>Hook:</b> ${esc(c.ai_hook)}</span>
+          <div style="display:flex;gap:6px;flex-shrink:0">
+            <button class="btn" data-a="reset-hook" type="button" style="padding:2px 8px;font-size:12px;white-space:nowrap">↩ Original Pitch</button>
+            <button class="btn" data-a="edit-hook" type="button" style="padding:2px 8px;font-size:12px;white-space:nowrap">✏️ Edit</button>
+            <button class="btn hook-btn" data-a="gen-hook" type="button" style="padding:2px 8px;font-size:12px;white-space:nowrap">✨ Regenerate</button>
+          </div>`;
+      }
+      draft(d);
+    }
+    return;
+  }
+  if (b.dataset.a === "reset-hook") {
+    delete c.ai_hook;
+    save();
+    const box = d.querySelector(".hook-box");
+    if (box) {
+      box.innerHTML = `
+        <span class="hook-txt" style="overflow:hidden;text-overflow:ellipsis"><b>Hook:</b> ${esc(c.one_liner || "what you're building")}</span>
+        <div style="display:flex;gap:6px;flex-shrink:0">
+          <button class="btn" data-a="edit-hook" type="button" style="padding:2px 8px;font-size:12px;white-space:nowrap">✏️ Edit</button>
+          <button class="btn hook-btn" data-a="gen-hook" type="button" style="padding:2px 8px;font-size:12px;white-space:nowrap">✨ AI Hook</button>
+        </div>`;
+    }
+    draft(d);
+    return;
+  }
+  if (b.dataset.a === "li-note") {
+    const note = makeLinkedInNote(c);
+    navigator.clipboard.writeText(note).then(() => { const o = b.textContent; b.textContent = "Copied Note!"; setTimeout(() => b.textContent = o, 1200); });
+    return;
+  }
+  if (b.dataset.a === "body" || b.dataset.a === "to" || b.dataset.a === "subject") {
+    const to = contacts(c)[0];
+    const txt = b.dataset.a === "body" ? d.querySelector("pre").textContent : b.dataset.a === "subject" ? d.querySelector(".subj").textContent : to ? best(to).email : "";
+    navigator.clipboard.writeText(txt).then(() => { const o = b.textContent; b.textContent = "Copied"; setTimeout(() => b.textContent = o, 1200) });
+  }
+});
+$("list").addEventListener("change", e => {
+  const sel = e.target.closest('[data-a="crm-sel"]');
+  if (!sel) return;
+  const d = sel.closest("details");
+  const c = DATA[d.dataset.i];
+  setCrmStatus(c.name, sel.value, d);
+});
+["q", "st", "hideSent", "crmFilter"].forEach(id => $(id).addEventListener(id === "q" ? "input" : "change", filter));
+$("all").onclick = e => {
+  const open = e.target.textContent === "Expand all";
+  document.querySelectorAll("details").forEach(d => { if (d.style.display !== "none") d.open = open });
+  e.target.textContent = open ? "Collapse all" : "Expand all";
+};
+
+let activeTplStep = "1";
+function loadTplEditor() {
+  document.querySelectorAll("[data-tpl-step]").forEach(btn => btn.classList.toggle("active", btn.dataset.tplStep === activeTplStep));
+  const sKey = activeTplStep === "1" ? "subject" : `subject_step${activeTplStep}`;
+  const bKey = activeTplStep === "1" ? "body" : `body_step${activeTplStep}`;
+  $("tplSubj").value = tpl[sKey] ?? DEFAULTS[sKey];
+  $("tplBody").value = tpl[bKey] ?? DEFAULTS[bKey];
+}
+document.querySelectorAll("[data-tpl-step]").forEach(btn => {
+  btn.onclick = () => {
+    activeTplStep = btn.dataset.tplStep;
+    loadTplEditor();
+  };
+});
+$("tplSubj").addEventListener("input", e => {
+  const sKey = activeTplStep === "1" ? "subject" : `subject_step${activeTplStep}`;
+  tpl[sKey] = e.target.value;
+  store.set(KEY, tpl);
+  update();
+});
+$("tplBody").addEventListener("input", e => {
+  const bKey = activeTplStep === "1" ? "body" : `body_step${activeTplStep}`;
+  tpl[bKey] = e.target.value;
+  store.set(KEY, tpl);
+  update();
+});
+$("reset").onclick = () => {
+  const sKey = activeTplStep === "1" ? "subject" : `subject_step${activeTplStep}`;
+  const bKey = activeTplStep === "1" ? "body" : `body_step${activeTplStep}`;
+  tpl[sKey] = DEFAULTS[sKey];
+  tpl[bKey] = DEFAULTS[bKey];
+  store.set(KEY, tpl);
+  loadTplEditor();
+  update();
+};
+loadTplEditor();
+
+document.querySelectorAll("[data-k]").forEach(el => {
+  if (!(el.dataset.k in tpl)) return;
+  el.value = tpl[el.dataset.k];
+  el.addEventListener("input", () => { tpl[el.dataset.k] = el.value; store.set(KEY, tpl); update(); });
+});
+let lastField = $("tplBody");
+$("tplSubj").addEventListener("focus", () => lastField = $("tplSubj"));
+$("tplBody").addEventListener("focus", () => lastField = $("tplBody"));
+$("vars").addEventListener("click", e => {
+  if (e.target.tagName !== "CODE") return;
+  const el = lastField || $("tplBody");
+  const s = el.selectionStart ?? el.value.length;
+  el.value = el.value.slice(0, s) + e.target.textContent + el.value.slice(el.selectionEnd ?? s);
+  el.focus(); el.selectionStart = el.selectionEnd = s + e.target.textContent.length;
+  el.dispatchEvent(new Event("input"));
+});
+$("load").onclick = loadBatch;
+$("more").onclick = loadMore;
+$("enrich").onclick = enrich;
+$("batch").onchange = () => store.set(KEY + "-last", $("batch").value);
+
+$("exportCsvBtn").onclick = () => {
+  const rows = [
+    ["Company", "YC Batch", "Status", "Date Contacted", "Founder Name", "Founder Title", "Founder Email", "Email Status", "Website", "Careers URL", "Tech Stack", "Hook / Pitch", "LinkedIn", "X (Twitter)"]
+  ];
+  const csvCell = val => `"${String(val ?? "").replace(/"/g, '""')}"`;
+  const allCompaniesMap = new Map();
+  for (let i = 0; i < localStorage.length; i++) {
+    const k = localStorage.key(i);
+    if (k && k.startsWith(KEY + "-batch-")) {
+      try {
+        const list = JSON.parse(localStorage.getItem(k));
+        if (Array.isArray(list)) list.forEach(c => allCompaniesMap.set(c.name, c));
+      } catch (e) {}
+    }
+  }
+  DATA.forEach(c => allCompaniesMap.set(c.name, c));
+
+  const companyNames = [...allCompaniesMap.keys()];
+  companyNames.sort((a, b) => {
+    const sA = getCrmStatus({ name: a });
+    const sB = getCrmStatus({ name: b });
+    if (sA !== "uncontacted" && sB === "uncontacted") return -1;
+    if (sA === "uncontacted" && sB !== "uncontacted") return 1;
+    return a.localeCompare(b);
+  });
+
+  companyNames.forEach(cName => {
+    const c = allCompaniesMap.get(cName) || { name: cName };
+    const fs = contacts(c);
+    const f = fs[0] || {};
+    const e = f.name ? best(f) : { email: "", label: "" };
+    const s = getCrmStatus(c);
+    const crmInfo = crm[cName] || {};
+    const dateStr = crmInfo.at ? new Date(crmInfo.at).toLocaleDateString() : "";
+    const techStr = (c.tech_stack || []).join(", ");
+    const hook = c.ai_hook || c.one_liner || "";
+
+    rows.push([
+      csvCell(c.name),
+      csvCell(c.batch || ""),
+      csvCell(s),
+      csvCell(dateStr),
+      csvCell(f.name || ""),
+      csvCell(f.title || ""),
+      csvCell(e.email || ""),
+      csvCell(e.label || ""),
+      csvCell(c.website || ""),
+      csvCell(c.careers_url || ""),
+      csvCell(techStr),
+      csvCell(hook),
+      csvCell(f.linkedin || c.linkedin || ""),
+      csvCell(f.twitter || c.twitter || "")
+    ]);
+  });
+
+  const csvContent = rows.map(r => r.join(",")).join("\r\n");
+  const blob = new Blob(["\uFEFF" + csvContent], { type: "text/csv;charset=utf-8;" });
+  const a = document.createElement("a");
+  const dateStr = new Date().toISOString().slice(0, 10);
+  a.href = URL.createObjectURL(blob);
+  a.download = `yc-outreach-pipeline-${dateStr}.csv`;
+  a.click();
+  URL.revokeObjectURL(a.href);
+};
+
+$("exportBtn").onclick = () => {
+  const backup = {
+    exported_at: new Date().toISOString(),
+    version: 2,
+    tpl: tpl,
+    crm: crm,
+    sent: [...sent],
+    batches: {}
+  };
+  for (let i = 0; i < localStorage.length; i++) {
+    const k = localStorage.key(i);
+    if (k && k.startsWith(KEY + "-batch-")) {
+      const bName = k.replace(KEY + "-batch-", "");
+      try {
+        backup.batches[bName] = JSON.parse(localStorage.getItem(k));
+      } catch (e) {}
+    }
+  }
+  const blob = new Blob([JSON.stringify(backup, null, 2)], { type: "application/json" });
+  const a = document.createElement("a");
+  const dateStr = new Date().toISOString().slice(0, 10);
+  a.href = URL.createObjectURL(blob);
+  a.download = `yc-outreach-backup-${dateStr}.json`;
+  a.click();
+  URL.revokeObjectURL(a.href);
+};
+
+$("importBtn").onclick = () => $("importFile").click();
+$("importFile").onchange = e => {
+  const file = e.target.files?.[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    try {
+      const data = JSON.parse(ev.target.result);
+      if (!data || typeof data !== "object") throw new Error("Invalid backup format");
+      if (data.tpl) {
+        tpl = Object.assign({}, DEFAULTS, data.tpl);
+        store.set(KEY, tpl);
+        document.querySelectorAll("[data-k]").forEach(inp => {
+          if (inp.dataset.k in tpl) inp.value = tpl[inp.dataset.k] || "";
+        });
+        loadTplEditor();
+      }
+      if (data.crm) {
+        crm = data.crm;
+        store.set(KEY + "-crm", crm);
+      }
+      if (Array.isArray(data.sent)) {
+        sent = new Set(data.sent);
+        store.set(KEY + "-sent", [...sent]);
+      }
+      if (data.batches && typeof data.batches === "object") {
+        for (const [bName, bData] of Object.entries(data.batches)) {
+          store.set(`${KEY}-batch-${bName}`, bData);
+        }
+      }
+      if (batch) {
+        ALL = store.get(`${KEY}-batch-${batch}`, []) || [];
+        DATA = ALL.filter(c => c.founders || c.error);
+        render();
+        progress();
+      } else {
+        filter();
+      }
+      alert("✅ Backup restored successfully!");
+    } catch (err) {
+      alert("Failed to restore backup: " + err.message);
+    } finally {
+      e.target.value = "";
+    }
+  };
+  reader.readAsText(file);
+};
+
+api({ action: "batches" }).then(bs => {
+  const last = store.get(KEY + "-last", "");
+  $("batch").innerHTML = bs.filter(b => b.batch !== "Unspecified")
+    .map(b => `<option value="${esc(b.batch)}" ${b.batch === last ? "selected" : ""}>${esc(b.batch)} (${b.count} companies)</option>`).join("");
+  $("load").disabled = false;
+}).catch(e => { $("batch").innerHTML = "<option value=''>Couldn't load batches</option>"; say("loadStatus", e.message, true) });
+</script></body></html>
