@@ -60,9 +60,10 @@ footer{color:var(--muted);font-size:13px;margin-top:32px}
     <label class="f">Portfolio / website<input data-k="portfolio" placeholder="https://..."></label>
     <label class="f">GitHub<input data-k="github" placeholder="https://github.com/..."></label>
     <label class="f">Resume link<input data-k="resume" placeholder="https://..."></label>
-    <label class="f">AI API Key (Gemini / OpenAI / Groq)<input data-k="ai_key" type="password" placeholder="Gemini key, sk-..., or gsk_..." autocomplete="off"></label>
+    <label class="f">Primary AI Key (Gemini or OpenAI)<input data-k="ai_key" type="password" placeholder="Gemini key (AIza...) or OpenAI (sk-...)" autocomplete="off"></label>
+    <label class="f">Backup AI Key (Groq - optional)<input data-k="groq_key" type="password" placeholder="gsk_... (free instant fallback)" autocomplete="off"></label>
   </div>
-  <p class="ph" style="margin:4px 0 8px">AI Key is optional: Groq, Google Gemini, and OpenAI are supported. If Gemini is experiencing high demand, it automatically falls back to Groq for instant generation.</p>
+  <p class="ph" style="margin:4px 0 8px">AI Key is optional: Gemini, OpenAI, and Groq are supported. If you provide both a primary key and a free Groq backup key (<code>gsk_...</code>), it automatically falls back to Groq whenever Gemini or OpenAI is overloaded.</p>
   <h2>2. Email sequence templates</h2>
   <div style="display:flex;gap:6px;margin-bottom:12px;border-bottom:1px solid var(--line);padding-bottom:10px">
     <button type="button" class="tab-btn active" data-tpl-step="1">Step 1: Opener</button>
@@ -142,7 +143,7 @@ footer{color:var(--muted);font-size:13px;margin-top:32px}
 </main>
 <script>
 const DEFAULTS = {
-  my_name: "", my_skills: "", portfolio: "", github: "", resume: "", ai_key: "",
+  my_name: "", my_skills: "", portfolio: "", github: "", resume: "", ai_key: "", groq_key: "",
   subject: "interested in {company}",
   body: `Hey {first_name},
 
@@ -636,8 +637,8 @@ async function callGemini(apiKey, prompt) {
 const GROQ_FALLBACK_MODEL = "openai/gpt-oss-120b";
 
 async function callGroq(prompt, customKey) {
-  const key = customKey || (tpl.ai_key && tpl.ai_key.startsWith("gsk_") ? tpl.ai_key : "");
-  if (!key) throw new Error("Please enter a Groq API key (gsk_...) or Gemini key in Section 1");
+  const key = customKey || (tpl.groq_key || "").trim() || (tpl.ai_key && tpl.ai_key.startsWith("gsk_") ? tpl.ai_key.trim() : "");
+  if (!key) throw new Error("Please enter a Groq API key (gsk_...) in Section 1");
   const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
     method: "POST",
     headers: { "Content-Type": "application/json", "Authorization": "Bearer " + key },
@@ -658,6 +659,7 @@ async function callGroq(prompt, customKey) {
 
 async function generateHook(c, d, btn) {
   const apiKey = (tpl.ai_key || "").trim();
+  const groqKey = (tpl.groq_key || "").trim() || (apiKey.startsWith("gsk_") ? apiKey : "");
   const f = contacts(c)[0] || { name: "", title: "" };
   const prompt = `You are writing a cold email from a software engineer to a YC founder.
 The sentence in the email is:
@@ -714,18 +716,28 @@ Rules:
         if (data.error) throw new Error(data.error.message || "OpenAI error");
         hook = data.choices?.[0]?.message?.content || "";
       } catch (openAiErr) {
-        console.warn("OpenAI failed, falling back to Groq:", openAiErr);
-        hook = await callGroq(prompt);
+        if (groqKey) {
+          console.warn("OpenAI failed, falling back to Groq backup key:", openAiErr);
+          hook = await callGroq(prompt, groqKey);
+        } else {
+          throw openAiErr;
+        }
       }
     } else if (apiKey) {
       try {
         hook = await callGemini(apiKey, prompt);
       } catch (geminiErr) {
-        console.warn("Gemini experiencing high demand or error, falling back to Groq:", geminiErr);
-        hook = await callGroq(prompt);
+        if (groqKey) {
+          console.warn("Gemini experiencing high demand or error, falling back to Groq backup key:", geminiErr);
+          hook = await callGroq(prompt, groqKey);
+        } else {
+          throw geminiErr;
+        }
       }
+    } else if (groqKey) {
+      hook = await callGroq(prompt, groqKey);
     } else {
-      hook = await callGroq(prompt);
+      throw new Error("Please enter an AI key (Gemini, OpenAI, or Groq) in Section 1");
     }
     hook = hook.replace(/^["']|["']$/g, "").replace(/\.$/, "").trim().toLowerCase();
     if (!hook) throw new Error("No response generated");
