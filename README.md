@@ -14,7 +14,9 @@ Python 3.9+, standard library only. Nothing to install.
 
 1. **Pick a batch** (Summer 2005 through the latest) from YC's public directory.
 2. **Founders, Tech Stacks & Careers load 20 at a time:** Scrapes founder profiles, checks DNS, and detects company tech stacks (React, Python, AWS, Docker, etc.) and hiring boards (Ashby, Greenhouse, Lever, Workable) from company websites. Matching skills are highlighted with `🔥`.
-3. **Emails are filled in** for each founder, best source first:
+3. **GitHub Open Source Detector:** Auto-discovers open-source startup repositories (Supabase, PostHog, Airbyte, etc.) with clickable `⭐ OSS` links, `{github_repo}` email placeholders, and OSS-aware AI hooks.
+4. **Free DNS MX Deliverability & Team Size Filters:** Client-side DNS-over-HTTPS (DoH) verifies mail servers (Google Workspace, Microsoft 365, Active MX, or Inactive/Bounce Warning) without any API key. Filter companies by founder team size (`Seed: 1–15`, `Growth: 16–50`, `Scale: 50+`).
+5. **Emails are filled in** for each founder, best source first:
 
    | Label | Source | Reliability |
    |---|---|---|
@@ -25,13 +27,13 @@ Python 3.9+, standard library only. Nothing to install.
 
    The reliability figure comes from a check against 151 Apify-verified founder emails: the first guess matched 80%, and
    the right address was somewhere in the guess list 93% of the time.
-4. **3-Step Follow-Up Sequence & Gmail Compose:** Switch between Opener (Step 1), Bump (+3d, Step 2), and Breakup (+7d, Step 3) email drafts. 1-click **Open in Gmail ↗** creates pre-filled web compose drafts alongside default mail links.
-5. **AI Micro-Hook & Custom Pitch:** Generates natural, lowercase observation hooks via Groq, Gemini, or OpenAI without spammy fluff. Revert to YC's original pitch with `[↩ Original Pitch]` or customize inline with `[✏️ Edit]`.
-6. **Multi-Channel Founder Radar:** Auto-detects each company's official **Launch HN** Hacker News thread with upvotes, and copies personalized **LinkedIn connection notes** (<300 chars) in 1 click.
-7. **Local CRM Pipeline:** Track outreach status (`Uncontacted`, `Step 1 Sent`, `Follow-up Due` automatically after 3 days, `Step 2 Sent`, `Replied`, `Passed`) with live filters and progress metrics. Stored in your browser (`localStorage`).
+6. **3-Step Follow-Up Sequence & Gmail Compose:** Switch between Opener (Step 1), Bump (+3d, Step 2), and Breakup (+7d, Step 3) email drafts. 1-click **Open in Gmail ↗** creates pre-filled web compose drafts alongside default mail links.
+7. **AI Micro-Hook & Custom Pitch:** Generates natural, lowercase observation hooks via Groq, Gemini, or OpenAI without spammy fluff. Revert to YC's original pitch with `[↩ Original Pitch]` or customize inline with `[✏️ Edit]`.
+8. **Multi-Channel Founder Radar:** Auto-detects each company's official **Launch HN** Hacker News thread with upvotes, and copies personalized **LinkedIn connection notes** (<300 chars) in 1 click.
+9. **Outreach Conversion Funnel & Local CRM:** Track pipeline stages (`Uncontacted`, `Step 1 Sent`, `Follow-up Due` automatically after 3 days, `Step 2 Sent`, `Replied`, `Passed`) with live funnel conversion metrics (`Contacted %`, `Reply Rate %`), in-line private notes, and theme toggle (`☀️ / 🌙`).
 
 Your details, template, CRM pipeline and loaded batches are stored in your browser (`localStorage`). There's no
-database and no account. Use **📊 Export CSV (Excel)** to download a clean spreadsheet of your pipeline, or **💾 Backup (JSON)** and **📂 Restore** to migrate your data across devices.
+database and no account. Use **📊 Export CSV (Excel)** to download a clean spreadsheet of your pipeline (including notes, team sizes, and repos), or **💾 Backup (JSON)** and **📂 Restore** to migrate your data across devices.
 
 ## Deploy
 

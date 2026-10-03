@@ -104,12 +104,19 @@ CAREERS_RE = re.compile(
     r'href=["\'](https?://(?:boards\.greenhouse\.io|jobs\.lever\.co|jobs\.ashbyhq\.com|apply\.workable\.com)/[^\s"\'<>]+|/[a-z0-9_-]*(?:careers|jobs|openings|positions)[a-z0-9_-]*)["\']',
     re.I
 )
+GITHUB_RE = re.compile(
+    r'https?://github\.com/([a-zA-Z0-9_-]+)(?:/([a-zA-Z0-9_.-]+))?',
+    re.I
+)
+IGNORED_GH = {"about", "pricing", "features", "customer-stories", "login", "signup", "explore", "topics", "contact", "security", "enterprise", "site", "sponsors", "trending"}
 
 
 def site_intel(website, domain):
     found = set()
     tech = set()
     careers = ""
+    github_repo = ""
+    github_url = ""
     for path in ("", "/contact"):
         body = get(website.rstrip("/") + path, timeout=3)
         if not body:
@@ -127,7 +134,15 @@ def site_intel(website, domain):
             if cm:
                 u = cm.group(1)
                 careers = u if u.startswith("http") else (website.rstrip("/") + u)
-    return sorted(found), sorted(tech), careers
+        if not github_repo:
+            for gm in GITHUB_RE.finditer(body):
+                org = gm.group(1)
+                repo = gm.group(2) or ""
+                if org.lower() not in IGNORED_GH:
+                    github_repo = f"{org}/{repo.rstrip('.')}" if repo else org
+                    github_url = f"https://github.com/{github_repo}"
+                    break
+    return sorted(found), sorted(tech), careers, github_repo, github_url
 
 
 def guesses(full_name, domain):
@@ -155,9 +170,21 @@ def founders(slug):
     website = c.get("website") or ""  # always from YC, never from the client
     domain = domain_of(website)
     try:
-        emails, tech_stack, careers_url = _pool.submit(site_intel, website, domain).result(timeout=SITE_DEADLINE) if domain else ([], [], "")
+        emails, tech_stack, careers_url, github_repo, github_url = _pool.submit(site_intel, website, domain).result(timeout=SITE_DEADLINE) if domain else ([], [], "", "", "")
     except cf.TimeoutError:
-        emails, tech_stack, careers_url = [], [], ""
+        emails, tech_stack, careers_url, github_repo, github_url = [], [], "", "", ""
+
+    if not github_url:
+        for val in [c.get("github_url"), c.get("github")]:
+            if val and "github.com" in val:
+                gm = GITHUB_RE.search(val)
+                if gm and gm.group(1).lower() not in IGNORED_GH:
+                    org = gm.group(1)
+                    repo = gm.group(2) or ""
+                    github_repo = f"{org}/{repo.rstrip('.')}" if repo else org
+                    github_url = f"https://github.com/{github_repo}"
+                    break
+
     dns = resolves(domain) if domain else False
     out = []
     for f in c.get("founders", []):
@@ -169,7 +196,7 @@ def founders(slug):
                     "email_guesses": guesses(name, domain) if dns else []})
     return {"slug": slug, "website": website, "domain": domain, "linkedin": c.get("linkedin_url") or "",
             "twitter": c.get("twitter_url") or "", "site_emails": emails, "tech_stack": tech_stack,
-            "careers_url": careers_url, "founders": out}
+            "careers_url": careers_url, "github_repo": github_repo, "github_url": github_url, "founders": out}
 
 
 def route(query):

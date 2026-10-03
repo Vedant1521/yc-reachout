@@ -3,8 +3,10 @@
 <meta name="description" content="Pick a YC batch, find founder emails, and write personalised cold emails from one template.">
 <style>
 :root{--bg:#f7f7f5;--card:#fff;--fg:#1c1c1a;--muted:#6b6b66;--line:#e4e3de;--accent:#e2561b;--ok:#1f8a4c;--warn:#a86b00;--err:#c0392b}
-@media (prefers-color-scheme:dark){:root{--bg:#141413;--card:#1e1e1c;--fg:#ecebe6;--muted:#9a998f;--line:#302f2b;--accent:#f07a45;--ok:#4cc27d;--warn:#e0a53a;--err:#e8705f}}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.5 -apple-system,system-ui,"Segoe UI",sans-serif}
+[data-theme="dark"]{--bg:#11151c;--card:#181f2a;--fg:#e6edf3;--muted:#8b949e;--line:#2e3642;--accent:#f07a45;--ok:#4cc27d;--warn:#e0a53a;--err:#e8705f}
+[data-theme="light"]{--bg:#f7f7f5;--card:#fff;--fg:#1c1c1a;--muted:#6b6b66;--line:#e4e3de;--accent:#e2561b;--ok:#1f8a4c;--warn:#a86b00;--err:#c0392b}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#11151c;--card:#181f2a;--fg:#e6edf3;--muted:#8b949e;--line:#2e3642;--accent:#f07a45;--ok:#4cc27d;--warn:#e0a53a;--err:#e8705f}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.5 -apple-system,system-ui,"Segoe UI",sans-serif;transition:background .15s ease,color .15s ease}
 main{max-width:860px;margin:0 auto;padding:32px 16px}h1{margin:0 0 4px;font-size:24px}h2{font-size:16px;margin:0 0 10px}
 p.sub{margin:0 0 20px;color:var(--muted)}a{color:var(--accent)}
 .panel{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:20px}
@@ -42,6 +44,7 @@ footer{color:var(--muted);font-size:13px;margin-top:32px}
     <p class="sub" style="margin:4px 0 0">Pick a YC batch, find founder emails, and write personalized cold emails. Everything you type stays in your browser.</p>
   </div>
   <div style="display:flex;gap:8px;align-items:center;margin-top:4px">
+    <button id="themeToggle" type="button" title="Toggle Dark/Light Mode" style="font-size:14px;padding:6px 10px">🌙</button>
     <button id="exportCsvBtn" type="button" title="Download your outreach pipeline as an Excel / CSV spreadsheet">📊 Export CSV (Excel)</button>
     <button id="exportBtn" type="button" title="Download a JSON backup to restore on another computer">💾 Backup (JSON)</button>
     <button id="importBtn" type="button" title="Restore your templates and CRM pipeline from a JSON backup">📂 Restore</button>
@@ -68,9 +71,9 @@ footer{color:var(--muted);font-size:13px;margin-top:32px}
   </div>
   <label class="f">Subject<input id="tplSubj"></label>
   <label class="f" style="margin-top:10px">Body<textarea id="tplBody"></textarea></label>
-  <p class="ph" id="vars">Click to insert: <code>{first_name}</code><code>{company}</code><code>{hook}</code><code>{tech_stack}</code><code>{one_liner}</code><code>{batch}</code><code>{my_name}</code><code>{my_skills}</code><code>{portfolio}</code><code>{github}</code><code>{resume}</code>
+  <p class="ph" id="vars">Click to insert: <code>{first_name}</code><code>{company}</code><code>{hook}</code><code>{tech_stack}</code><code>{github_repo}</code><code>{one_liner}</code><code>{batch}</code><code>{my_name}</code><code>{my_skills}</code><code>{portfolio}</code><code>{github}</code><code>{resume}</code>
   &nbsp;<button id="reset" type="button">Reset step template</button></p>
-  <p class="ph">Lines like <code>resume: {resume}</code> are dropped when left empty. <code>{hook}</code> uses your 1-click AI observation; <code>{tech_stack}</code> inserts detected technologies.</p>
+  <p class="ph">Lines like <code>resume: {resume}</code> are dropped when left empty. <code>{hook}</code> uses your 1-click AI observation; <code>{tech_stack}</code> inserts detected technologies; <code>{github_repo}</code> inserts detected open-source repo.</p>
 </section>
 
 <section class="panel">
@@ -98,6 +101,12 @@ footer{color:var(--muted);font-size:13px;margin-top:32px}
 <div class="bar">
   <input id="q" placeholder="Search company or founder" aria-label="Search">
   <select id="st" aria-label="Email type"><option value="">All emails</option><option value="valid">Verified</option><option value="unknown">Unverified</option><option value="site">Found on site</option><option value="guess">Guess</option><option value="none">No email</option></select>
+  <select id="teamFilter" aria-label="Team size">
+    <option value="">All Team Sizes</option>
+    <option value="seed">🌱 Seed (1–15)</option>
+    <option value="growth">🚀 Growth (16–50)</option>
+    <option value="scale">🏢 Scale (50+)</option>
+  </select>
   <select id="crmFilter" aria-label="Pipeline filter">
     <option value="">All Pipeline</option>
     <option value="due">⏰ Follow-up Due</option>
@@ -110,7 +119,7 @@ footer{color:var(--muted);font-size:13px;margin-top:32px}
   <label class="chk"><input type="checkbox" id="hideSent"> hide sent</label>
   <button id="all" type="button">Expand all</button>
 </div>
-<div id="metricsBar" style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin:0 0 12px;padding:8px 12px;background:var(--card);border:1px solid var(--line);border-radius:8px;font-size:13px">
+<div id="metricsBar" style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin:0 0 8px;padding:8px 12px;background:var(--card);border:1px solid var(--line);border-radius:8px;font-size:13px">
   <span id="mTotal">0 Total</span>
   <span style="color:var(--line)">|</span>
   <span id="mSent" style="color:var(--accent);font-weight:600">0 Sent</span>
@@ -119,6 +128,13 @@ footer{color:var(--muted);font-size:13px;margin-top:32px}
   <span style="color:var(--line)">|</span>
   <span id="mReplied" style="color:var(--ok);font-weight:700">0 Replied</span>
   <span id="shown" style="margin-left:auto;color:var(--muted)"></span>
+</div>
+<div id="funnelBar" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:0 0 14px;padding:6px 12px;background:var(--card);border:1px solid var(--line);border-radius:8px;font-size:12px;color:var(--muted)">
+  <span style="font-weight:600;color:var(--fg)">Outreach Funnel:</span>
+  <span id="fTotal">0 loaded</span> ➔ 
+  <span id="fSent" style="color:var(--accent);font-weight:600">0 contacted (0%)</span> ➔ 
+  <span id="fDue" style="color:var(--warn);font-weight:600">0 due</span> ➔ 
+  <span id="fReplied" style="color:var(--ok);font-weight:700">0 replies (0% rate)</span>
 </div>
 <div id="list"></div>
 <p style="text-align:center"><button id="more" class="primary" type="button" hidden>Load more</button></p>
@@ -264,6 +280,8 @@ function fill(text, c) {
     hook: hook,
     tech_stack: techStr || "your stack",
     careers_url: c.careers_url || "",
+    github_repo: c.github_repo || "",
+    github_url: c.github_url || "",
     batch: c.batch,
     my_name: tpl.my_name,
     my_skills: tpl.my_skills || "software engineering",
@@ -286,6 +304,7 @@ function render() {
       return `<span class="badge ${isMatch ? "valid" : "none"}" style="font-size:11px;padding:0 6px">${isMatch ? "🔥 " : ""}${esc(t)}</span>`;
     }).join(" ");
     const status = getCrmStatus(c);
+    const crmInfo = crm[c.name] || {};
     let statusBadge = "";
     if (status === "due") statusBadge = `<span class="badge" style="background:#e0a53a;color:#141413;font-weight:700;border:none">⏰ Follow-up Due</span>`;
     else if (status === "step1") statusBadge = `<span class="badge" style="color:var(--accent);border-color:var(--accent)">Step 1 Sent</span>`;
@@ -295,11 +314,11 @@ function render() {
 
     const isOpen = openIndexes.has(String(i)) ? "open" : "";
     return `<details data-i="${i}" data-k="${esc(key)}" data-s="${b.kind}" data-crm="${status}" data-seq="1" class="${status !== "uncontacted" ? "sent" : ""} crm-${status}" ${isOpen}>
-      <summary><span class="name">${esc(c.name)}</span><span class="badge ${b.kind || "none"}">${esc(b.label)}</span>
+      <summary><span class="name">${esc(c.name)}</span>${c.github_repo ? `<span class="badge" style="color:#2ea44f;border-color:#2ea44f;font-size:11px;padding:0 5px">⭐ OSS</span>` : ""}<span class="badge ${b.kind || "none"}">${esc(b.label)}</span>
       <span class="crm-badge">${getStatusBadge(status)}</span>
       <span class="meta">${esc(f?.name || "")}<br>${esc(c.batch)}</span></summary>
       <div class="body">
-        <p class="one">${esc(c.one_liner)}${url(c.website) ? ` · <a class="lnk" href="${url(c.website)}" target="_blank" rel="noopener">website</a>` : ""}${c.careers_url ? ` · <a class="lnk" href="${url(c.careers_url)}" target="_blank" rel="noopener" style="font-weight:600;color:var(--ok)">Careers ↗</a>` : ""} · <a class="lnk" href="https://www.ycombinator.com/companies/${esc(c.slug)}" target="_blank" rel="noopener">YC</a>${c.launch_hn ? ` · <a class="lnk hn-link" href="${c.launch_hn.url}" target="_blank" rel="noopener" style="color:#ff6600;font-weight:600">Launch HN (${c.launch_hn.points} pts) ↗</a>` : ` · <a class="lnk hn-link" target="_blank" rel="noopener" style="color:#ff6600;font-weight:600;display:none"></a>`}${url(f?.linkedin) ? ` · <a class="lnk" href="${url(f.linkedin)}" target="_blank" rel="noopener">LinkedIn</a>` : ""}${url(f?.twitter || c.twitter) ? ` · <a class="lnk" href="${url(f?.twitter || c.twitter)}" target="_blank" rel="noopener">X</a>` : ""}</p>
+        <p class="one">${esc(c.one_liner)}${url(c.website) ? ` · <a class="lnk" href="${url(c.website)}" target="_blank" rel="noopener">website</a>` : ""}${c.careers_url ? ` · <a class="lnk" href="${url(c.careers_url)}" target="_blank" rel="noopener" style="font-weight:600;color:var(--ok)">Careers ↗</a>` : ""}${c.github_repo ? ` · <a class="lnk" href="${esc(c.github_url || `https://github.com/${c.github_repo}`)}" target="_blank" rel="noopener" style="color:#2ea44f;font-weight:600">⭐ OSS (${esc(c.github_repo)}) ↗</a>` : ""} · <a class="lnk" href="https://www.ycombinator.com/companies/${esc(c.slug)}" target="_blank" rel="noopener">YC</a>${c.launch_hn ? ` · <a class="lnk hn-link" href="${c.launch_hn.url}" target="_blank" rel="noopener" style="color:#ff6600;font-weight:600">Launch HN (${c.launch_hn.points} pts) ↗</a>` : ` · <a class="lnk hn-link" target="_blank" rel="noopener" style="color:#ff6600;font-weight:600;display:none"></a>`}${url(f?.linkedin) ? ` · <a class="lnk" href="${url(f.linkedin)}" target="_blank" rel="noopener">LinkedIn</a>` : ""}${url(f?.twitter || c.twitter) ? ` · <a class="lnk" href="${url(f?.twitter || c.twitter)}" target="_blank" rel="noopener">X</a>` : ""}${c.team_size ? ` · <span style="color:var(--muted)">${c.team_size} people</span>` : ""}</p>
         ${techTags ? `<div style="margin:4px 0 8px;display:flex;gap:4px;flex-wrap:wrap;align-items:center"><span style="font-size:12px;color:var(--muted)">Tech:</span> ${techTags}</div>` : ""}
         <div class="hook-box" style="margin:8px 0;padding:6px 10px;background:var(--bg);border:1px dashed var(--line);border-radius:6px;font-size:13px;display:flex;align-items:center;justify-content:space-between;gap:8px">
           <span class="hook-txt" style="overflow:hidden;text-overflow:ellipsis"><b>Hook:</b> ${esc(c.ai_hook || c.one_liner || "what you're building")}</span>
@@ -310,7 +329,7 @@ function render() {
           </div>
         </div>
         ${c.error ? `<p class="status err">${esc(c.error)}</p>` : ""}
-        ${fs.map(o => { const e = best(o); return `<div class="r"><b>${o === f ? "To" : "Also"}</b>${esc(o.name)}${o.title ? ` (${esc(o.title)})` : ""} · ${esc(e.email || "no email")} <span class="badge ${e.kind}">${e.label}</span></div>` }).join("")}
+        ${fs.map(o => { const e = best(o); return `<div class="r"><b>${o === f ? "To" : "Also"}</b>${esc(o.name)}${o.title ? ` (${esc(o.title)})` : ""} · ${esc(e.email || "no email")} <span class="badge ${e.kind}">${e.label}</span>${e.email ? ` <span class="badge mx-badge" data-domain="${esc(c.domain)}" style="font-size:11px;padding:0 6px;display:none"></span>` : ""}</div>` }).join("")}
         <div style="display:flex;gap:6px;align-items:center;margin:12px 0 6px">
           <span style="font-size:12px;color:var(--muted);font-weight:600">Sequence:</span>
           <button class="tab-btn active" data-a="seq-tab" data-seq="1" type="button">Step 1: Opener</button>
@@ -339,6 +358,10 @@ function render() {
               <option value="passed" ${status === "passed" ? "selected" : ""}>✖ Passed</option>
             </select>
           </div>
+          <div style="width:100%;margin-top:10px;padding-top:8px;border-top:1px dashed var(--line);display:flex;gap:8px;align-items:center">
+            <span style="font-size:12px;color:var(--muted);font-weight:600">Note:</span>
+            <input class="crm-note" data-a="crm-note" placeholder="Add private note (e.g. met founder on Twitter, follow up Friday)..." value="${esc(crmInfo.note || "")}" style="flex:1;padding:4px 8px;font-size:12px;border-radius:6px;border:1px solid var(--line);background:var(--bg);color:var(--fg)">
+          </div>
         </div>
       </div></details>`;
   }).join("");
@@ -366,11 +389,12 @@ function update() { document.querySelectorAll("details[open]").forEach(draft) }
 
 function filter() {
   const q = $("q").value.trim().toLowerCase(), st = $("st").value, hide = $("hideSent").checked, cf = $("crmFilter").value;
+  const tf = $("teamFilter") ? $("teamFilter").value : "";
   let n = 0;
   let counts = { total: DATA.length, sent: 0, due: 0, replied: 0 };
   DATA.forEach(c => {
     const s = getCrmStatus(c);
-    if (s === "step1" || s === "step2" || s === "due") counts.sent++;
+    if (s === "step1" || s === "step2" || s === "due" || s === "replied") counts.sent++;
     if (s === "due") counts.due++;
     if (s === "replied") counts.replied++;
   });
@@ -381,7 +405,11 @@ function filter() {
     const matchSt = !st || d.dataset.s === st;
     const matchHide = !(hide && s !== "uncontacted");
     const matchCrm = !cf || s === cf;
-    const ok = matchQ && matchSt && matchHide && matchCrm;
+    let matchTeam = true;
+    if (tf === "seed") matchTeam = (c.team_size <= 15 || !c.team_size);
+    else if (tf === "growth") matchTeam = (c.team_size >= 16 && c.team_size <= 50);
+    else if (tf === "scale") matchTeam = (c.team_size > 50);
+    const ok = matchQ && matchSt && matchHide && matchCrm && matchTeam;
     d.style.display = ok ? "" : "none";
     if (ok) n++;
   });
@@ -390,6 +418,14 @@ function filter() {
   if ($("mDue")) $("mDue").textContent = `${counts.due} Follow-up Due`;
   if ($("mReplied")) $("mReplied").textContent = `${counts.replied} Replied`;
   $("shown").textContent = DATA.length ? `${n} of ${DATA.length} shown` : "";
+
+  const total = DATA.length;
+  const sentPct = total > 0 ? Math.round((counts.sent / total) * 100) : 0;
+  const replyRate = counts.sent > 0 ? Math.round((counts.replied / counts.sent) * 100) : 0;
+  if ($("fTotal")) $("fTotal").textContent = `${total} loaded`;
+  if ($("fSent")) $("fSent").textContent = `${counts.sent} contacted (${sentPct}%)`;
+  if ($("fDue")) $("fDue").textContent = `${counts.due} due`;
+  if ($("fReplied")) $("fReplied").textContent = `${counts.replied} replies (${replyRate}% rate)`;
 }
 
 // ALL = every company in the batch; DATA = the ones whose founders are loaded (what the list shows)
@@ -645,7 +681,7 @@ Now for this company:
 Company: ${c.name}
 One-liner: ${c.one_liner}
 Founder: ${f.name} (${f.title})
-Applicant Skills: ${tpl.my_skills || "software engineering"}
+${c.github_repo ? `Open-Source GitHub: ${c.github_repo}\n` : ""}Applicant Skills: ${tpl.my_skills || "software engineering"}
 
 Rules:
 - Output ONLY the lowercase noun phrase (6-14 words).
@@ -730,6 +766,53 @@ function makeLinkedInNote(c) {
   return note;
 }
 
+const mxCache = store.get(KEY + "-mx-cache", {});
+async function checkDomainMx(domain, d) {
+  if (!domain) return;
+  const badges = d.querySelectorAll(`.mx-badge[data-domain="${domain}"]`);
+  if (!badges.length) return;
+
+  const updateBadges = (text, color, title) => {
+    badges.forEach(b => {
+      b.textContent = text;
+      b.style.color = color;
+      b.style.borderColor = color;
+      b.style.display = "inline";
+      if (title) b.title = title;
+    });
+  };
+
+  if (mxCache[domain]) {
+    const c = mxCache[domain];
+    updateBadges(c.text, c.color, c.title);
+    return;
+  }
+
+  try {
+    const res = await fetch(`https://dns.google/resolve?name=${encodeURIComponent(domain)}&type=MX`);
+    const data = await res.json();
+    if (data.Answer && data.Answer.length > 0) {
+      const records = data.Answer.map(a => a.data ? a.data.toLowerCase() : "").join(" ");
+      let badgeData;
+      if (/google|aspmx/i.test(records)) {
+        badgeData = { text: "✓ Google Workspace", color: "var(--ok)", title: "Verified Google Workspace mail server" };
+      } else if (/outlook|microsoft|pphosted/i.test(records)) {
+        badgeData = { text: "✓ Microsoft 365", color: "var(--ok)", title: "Verified Microsoft 365 mail server" };
+      } else {
+        badgeData = { text: "✓ Active MX", color: "var(--ok)", title: "Active mail exchange found" };
+      }
+      mxCache[domain] = badgeData;
+      store.set(KEY + "-mx-cache", mxCache);
+      updateBadges(badgeData.text, badgeData.color, badgeData.title);
+    } else {
+      const badgeData = { text: "⚠️ Inactive MX", color: "var(--err)", title: "No MX records found - email will likely bounce" };
+      mxCache[domain] = badgeData;
+      store.set(KEY + "-mx-cache", mxCache);
+      updateBadges(badgeData.text, badgeData.color, badgeData.title);
+    }
+  } catch (err) {}
+}
+
 async function findLaunchHN(c, d) {
   if (c.launch_hn !== undefined) return;
   try {
@@ -762,11 +845,23 @@ $("list").addEventListener("toggle", e => {
   if (e.target.open) {
     draft(e.target);
     const c = DATA[e.target.dataset.i];
-    if (c) findLaunchHN(c, e.target);
+    if (c) {
+      findLaunchHN(c, e.target);
+      if (c.domain) checkDomainMx(c.domain, e.target);
+    }
   }
 }, true);
+$("list").addEventListener("input", e => {
+  const noteEl = e.target.closest('[data-a="crm-note"]');
+  if (!noteEl) return;
+  const d = noteEl.closest("details");
+  const c = DATA[d.dataset.i];
+  if (!crm[c.name]) crm[c.name] = { status: "uncontacted" };
+  crm[c.name].note = noteEl.value;
+  store.set(KEY + "-crm", crm);
+});
 $("list").addEventListener("click", e => {
-  if (e.target.closest('[data-a="crm-sel"]')) return;
+  if (e.target.closest('[data-a="crm-sel"]') || e.target.closest('[data-a="crm-note"]')) return;
   const b = e.target.closest("[data-a]"); if (!b) return;
   const d = b.closest("details"), c = DATA[d.dataset.i];
   if (b.dataset.a === "seq-tab") {
@@ -833,12 +928,30 @@ $("list").addEventListener("change", e => {
   const c = DATA[d.dataset.i];
   setCrmStatus(c.name, sel.value, d);
 });
-["q", "st", "hideSent", "crmFilter"].forEach(id => $(id).addEventListener(id === "q" ? "input" : "change", filter));
+["q", "st", "teamFilter", "crmFilter", "hideSent"].forEach(id => $(id)?.addEventListener(id === "q" ? "input" : "change", filter));
 $("all").onclick = e => {
   const open = e.target.textContent === "Expand all";
   document.querySelectorAll("details").forEach(d => { if (d.style.display !== "none") d.open = open });
   e.target.textContent = open ? "Collapse all" : "Expand all";
 };
+
+function initTheme() {
+  const savedTheme = store.get(KEY + "-theme", null);
+  const theme = savedTheme || (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+  document.documentElement.setAttribute("data-theme", theme);
+  const btn = $("themeToggle");
+  if (btn) btn.textContent = theme === "dark" ? "☀️" : "🌙";
+}
+initTheme();
+if ($("themeToggle")) {
+  $("themeToggle").onclick = () => {
+    const current = document.documentElement.getAttribute("data-theme") || "light";
+    const next = current === "dark" ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", next);
+    store.set(KEY + "-theme", next);
+    $("themeToggle").textContent = next === "dark" ? "☀️" : "🌙";
+  };
+}
 
 let activeTplStep = "1";
 function loadTplEditor() {
@@ -900,7 +1013,7 @@ $("batch").onchange = () => store.set(KEY + "-last", $("batch").value);
 
 $("exportCsvBtn").onclick = () => {
   const rows = [
-    ["Company", "YC Batch", "Status", "Date Contacted", "Founder Name", "Founder Title", "Founder Email", "Email Status", "Website", "Careers URL", "Tech Stack", "Hook / Pitch", "LinkedIn", "X (Twitter)"]
+    ["Company", "YC Batch", "Team Size", "Status", "Date Contacted", "Private Note", "Founder Name", "Founder Title", "Founder Email", "Email Status", "Website", "Careers URL", "Tech Stack", "Open Source GitHub", "Hook / Pitch", "LinkedIn", "X (Twitter)"]
   ];
   const csvCell = val => `"${String(val ?? "").replace(/"/g, '""')}"`;
   const allCompaniesMap = new Map();
@@ -938,8 +1051,10 @@ $("exportCsvBtn").onclick = () => {
     rows.push([
       csvCell(c.name),
       csvCell(c.batch || ""),
+      csvCell(c.team_size ?? ""),
       csvCell(s),
       csvCell(dateStr),
+      csvCell(crmInfo.note || ""),
       csvCell(f.name || ""),
       csvCell(f.title || ""),
       csvCell(e.email || ""),
@@ -947,6 +1062,7 @@ $("exportCsvBtn").onclick = () => {
       csvCell(c.website || ""),
       csvCell(c.careers_url || ""),
       csvCell(techStr),
+      csvCell(c.github_repo ? `${c.github_repo} (${c.github_url || `https://github.com/${c.github_repo}`})` : ""),
       csvCell(hook),
       csvCell(f.linkedin || c.linkedin || ""),
       csvCell(f.twitter || c.twitter || "")
